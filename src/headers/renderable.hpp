@@ -17,7 +17,6 @@ class Renderable {
         unsigned int elementBuffer;
 
         unsigned int shaderProgram;
-        unsigned int texture;
 
         int flip;
 

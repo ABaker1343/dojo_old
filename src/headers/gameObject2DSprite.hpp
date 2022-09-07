@@ -11,8 +11,9 @@ class GameObject2DSprite : public GameObject, public Renderable {
         GameObject2DSprite(std::string spritePath);
         ~GameObject2DSprite();
 
-        int numElements();
+        unsigned int texture;
 
+        int numElements();
 
     private:
 
