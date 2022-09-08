@@ -113,6 +113,19 @@ unsigned int Renderable::loadTextureFromFile(const char* filepath) {
 
 }
 
+unsigned int Renderable::createVertexBuffer(std::vector<float> *vertices) {
+    glBindVertexArray(0);
+    unsigned int newBuffer;
+    glGenBuffers(1, &newBuffer);
+
+    glBindBuffer(GL_ARRAY_BUFFER, newBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices->size(), vertices->data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    return newBuffer;
+}
+
 int Renderable::numElements() {
     return elements->size();
 }

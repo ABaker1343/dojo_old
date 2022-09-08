@@ -1,12 +1,14 @@
 #include "headers/gameObject2DAnimatedSprite.hpp"
+#include "headers/gameObject.hpp"
 
 namespace dojo {
 
 GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(int numFrames, std::string animationPath) : GameObject() {
 
-    animations = new std::vector<ANIMATION>();
+    animations = new std::unordered_map<std::string, ANIMATION>();
     ANIMATION baseAnimation;
 
+    baseAnimation.name = "default";
     baseAnimation.currentFrame = 0;
     baseAnimation.numFrames = numFrames;
     baseAnimation.chunkSize = 1.0f/numFrames;
@@ -29,8 +31,8 @@ GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(int numFrames, std::strin
     shaderProgram = Renderable::createBasicShaderProgram("src/shaders/basicVert.vert", "src/shaders/basicFrag.frag");
     baseAnimation.texture = Renderable::loadTextureFromFile(animationPath.c_str());
 
-    animations->push_back(baseAnimation);
-    currentAnimation = &(*animations)[0];
+    animations->insert({"default", baseAnimation});
+    currentAnimation = &(*animations)["default"];
 
 }
 
@@ -51,6 +53,38 @@ float GameObject2DAnimatedSprite::currentAnimationChunkSize() {
 
 unsigned int GameObject2DAnimatedSprite::currentTexture() {
     return currentAnimation->texture;
+}
+
+std::string GameObject2DAnimatedSprite::currentAnimationName() {
+    return currentAnimation->name;
+}
+
+void GameObject2DAnimatedSprite::addAnimation(std::string animationName, int numFrames, std::string animationPath) {
+    ANIMATION newAnimation;
+    newAnimation.name = animationName;
+    newAnimation.currentFrame = 0;
+    newAnimation.numFrames = numFrames;
+    newAnimation.chunkSize = 1.0f/numFrames;
+
+    vertices = new std::vector<float> {
+        // x, y, z, texture x, texture y
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+        1.0f, 1.0f, 0.0f, newAnimation.chunkSize, 1.0f,
+        1.0f, 0.0f, 0.0f, newAnimation.chunkSize, 0.0f,
+    };
+
+    // we only have to have one new framebuffer here
+    newAnimation.vertexBuffer = Renderable::createVertexBuffer(vertices);
+
+    newAnimation.texture = Renderable::loadTextureFromFile(animationPath.c_str());
+    
+    animations->insert({animationName, newAnimation});
+}
+
+void GameObject2DAnimatedSprite::setCurrentAnimation(std::string animationName) {
+    currentAnimation->currentFrame = 0;
+    currentAnimation = &(*animations)[animationName];
 }
 
 bool GameObject2DAnimatedSprite::nextFrame() {

@@ -15,10 +15,14 @@ void handleInputs(dojo::Window*, dojo::GameObject2DAnimatedSprite*);
 int main () {
 
     dojo::Window *window = new dojo::Window(500, 500, "dojoWindow");
+
     //dojo::GameObject2DSprite *player = new dojo::GameObject2DSprite("bgCatAndSakura.jpg");
     dojo::GameObject2DAnimatedSprite *player = new dojo::GameObject2DAnimatedSprite(4, "animation0.jpg");
+    player->addAnimation("walking", 4, "makima.jpg");
     player->scale.x = 20; player->scale.y = 20;
+
     dojo::Camera2D *c = new dojo::Camera2D();
+
 
     std::chrono::duration<double> frametime = std::chrono::milliseconds(50);
 
@@ -28,7 +32,13 @@ int main () {
         handleInputs(window, player);
         window->clear();
         window->render2D(c, player);
-        player->nextFrame();
+        if (!player->nextFrame()) {
+            if (player->currentAnimationName() == "default") {
+                player->setCurrentAnimation("walking");
+            } else {
+                player->setCurrentAnimation("default");
+            }
+        }
         std::cout << player->currentFrame() << std::endl;
 
         auto end = std::chrono::system_clock::now();
