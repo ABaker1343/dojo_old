@@ -12,6 +12,9 @@ uniform vec3 objectScale;
 uniform vec3 cameraPos;
 uniform vec3 cameraScale;
 
+uniform int animationFrame;
+uniform float animationChunkSize;
+
 void main () {
     vec3 renderPos;
     vec3 cameraTransform;
@@ -23,13 +26,13 @@ void main () {
     renderPos = (objectScale * aPos) + worldPos;
     renderPos = (renderPos * cameraTransform) - cameraPos;
 
+    texPos.x = inTexPos.x + (animationFrame * animationChunkSize);
+    texPos.y = inTexPos.y;
+
     if (flip != 0) {
-        texPos.x = inTexPos.x * -1;
-        texPos.y = inTexPos.y;
-    } else {
-        texPos = inTexPos;
+        texPos.x = texPos.x * -1;
+        texPos.y = texPos.y;
     }
 
     gl_Position = vec4(renderPos, 1.0);
-    texPos = inTexPos;
 }

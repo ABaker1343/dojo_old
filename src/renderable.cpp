@@ -113,4 +113,8 @@ unsigned int Renderable::loadTextureFromFile(const char* filepath) {
 
 }
 
+int Renderable::numElements() {
+    return elements->size();
+}
+
 }

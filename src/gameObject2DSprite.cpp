@@ -29,8 +29,4 @@ GameObject2DSprite::~GameObject2DSprite() {
     delete elements;
 }
 
-int GameObject2DSprite::numElements() {
-    return elements->size();
-}
-
 }

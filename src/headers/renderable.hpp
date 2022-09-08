@@ -20,6 +20,8 @@ class Renderable {
 
         int flip;
 
+        int numElements();
+
         static void create2DBuffers(unsigned int &vertexArrayObject, unsigned int &vertexBuffer, unsigned int &elementBuffer,
                 std::vector<float> *vertices, std::vector<unsigned int> *elements);
         static unsigned int createBasicShaderProgram(std::string vertexShaderPath, std::string fragmentShaderPath);

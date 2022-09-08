@@ -13,8 +13,6 @@ class GameObject2DSprite : public GameObject, public Renderable {
 
         unsigned int texture;
 
-        int numElements();
-
     private:
 
 };

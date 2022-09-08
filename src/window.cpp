@@ -80,6 +80,42 @@ void Window::render2D(Camera2D *c, GameObject2DSprite *s) {
     int cameraScaleUniformLocation = glGetUniformLocation(s->shaderProgram, "cameraScale");
     glUniform3fv(cameraScaleUniformLocation, 1, glm::value_ptr(c->scale));
 
+    int animationFrameUniformLocation = glGetUniformLocation(s->shaderProgram, "animationFrame");
+    glUniform1i(animationFrameUniformLocation, 0);
+
+    int animationChunkSizeUniformLocation = glGetUniformLocation(s->shaderProgram, "animationChunkSize");
+    glUniform1i(animationChunkSizeUniformLocation, 1.0f);
+
+    glDrawElements(GL_TRIANGLES, s->numElements(), GL_UNSIGNED_INT, 0);
+}
+
+void Window::render2D(Camera2D *c, GameObject2DAnimatedSprite *s) {
+    glUseProgram(s->shaderProgram);
+    glBindVertexArray(s->vertexArrayObject);
+
+    glBindTexture(GL_TEXTURE_2D, s->currentTexture());
+
+    int flipUniformPos = glGetUniformLocation(s->shaderProgram, "flip");
+    glUniform1i(flipUniformPos, s->flip);
+
+    int worldPosUniformLocation = glGetUniformLocation(s->shaderProgram, "worldPos");
+    glUniform3fv(worldPosUniformLocation, 1, glm::value_ptr(s->pos));
+
+    int scaleUniformLocation = glGetUniformLocation(s->shaderProgram, "objectScale");
+    glUniform3fv(scaleUniformLocation, 1, glm::value_ptr(s->scale));
+
+    int cameraPosUniformLocation = glGetUniformLocation(s->shaderProgram, "cameraPos");
+    glUniform3fv(cameraPosUniformLocation, 1, glm::value_ptr(c->pos));
+
+    int cameraScaleUniformLocation = glGetUniformLocation(s->shaderProgram, "cameraScale");
+    glUniform3fv(cameraScaleUniformLocation, 1, glm::value_ptr(c->scale));
+
+    int animationFrameUniformLocation = glGetUniformLocation(s->shaderProgram, "animationFrame");
+    glUniform1i(animationFrameUniformLocation, s->currentFrame());
+
+    int animationChunkSizeUniformLocation = glGetUniformLocation(s->shaderProgram, "animationChunkSize");
+    glUniform1f(animationChunkSizeUniformLocation, s->currentAnimationChunkSize());
+
     glDrawElements(GL_TRIANGLES, s->numElements(), GL_UNSIGNED_INT, 0);
 }
 

@@ -10,6 +10,7 @@
 
 #include "camera2D.hpp"
 #include "gameObject2DSprite.hpp"
+#include "gameObject2DAnimatedSprite.hpp"
 #include "renderable.hpp"
 
 #define KEYS_SIZE 349
@@ -24,7 +25,8 @@ namespace dojo {
 
             void clear();
             bool isAlive();
-            void render2D(Camera2D *c, GameObject2DSprite* s);
+            void render2D(Camera2D *c, GameObject2DSprite *s);
+            void render2D(Camera2D *c, GameObject2DAnimatedSprite *s);
 
         private:
             GLFWwindow* window;
