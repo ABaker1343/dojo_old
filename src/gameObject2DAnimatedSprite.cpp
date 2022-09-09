@@ -36,6 +36,16 @@ GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(int numFrames, std::strin
 
 }
 
+GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(GameObject2DAnimatedSprite *obj) : GameObject() {
+    animations = obj->animations;
+    currentAnimation = &(*animations)["default"];
+    elementBuffer = obj->elementBuffer;
+    glGenVertexArrays(1, &vertexArrayObject);
+    glBindVertexArray(vertexArrayObject);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, (*animations)["default"].vertexBuffer);
+}
+
 GameObject2DAnimatedSprite::~GameObject2DAnimatedSprite() {
     delete vertices;
     delete elements;
@@ -85,6 +95,8 @@ void GameObject2DAnimatedSprite::addAnimation(std::string animationName, int num
 void GameObject2DAnimatedSprite::setCurrentAnimation(std::string animationName) {
     currentAnimation->currentFrame = 0;
     currentAnimation = &(*animations)[animationName];
+    glBindVertexArray(vertexArrayObject);
+    glBindBuffer(GL_ARRAY_BUFFER, currentAnimation->vertexBuffer);
 }
 
 bool GameObject2DAnimatedSprite::nextFrame() {

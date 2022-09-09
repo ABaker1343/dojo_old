@@ -9,8 +9,15 @@
 #include "src/headers/gameObject2DSprite.hpp"
 #include "src/headers/window.hpp"
 
+typedef struct INPUT_HANDLER_INPUTS {
+    dojo::Window* window;
+    dojo::GameObject2DAnimatedSprite *sprite;
+    dojo::Camera2D *camera;
+    dojo::GameObject2DCollisionBox *spriteCollider;
+    dojo::GameObject2DCollisionBox *cameraCollider;
+} HANDLER_INPUT;
 
-void handleInputs(dojo::Window*, dojo::GameObject2DAnimatedSprite*);
+void handleInputs(HANDLER_INPUT*);
 
 int main () {
 
@@ -23,13 +30,22 @@ int main () {
 
     dojo::Camera2D *c = new dojo::Camera2D();
 
+    dojo::GameObject2DCollisionBox *playerCollider = new dojo::GameObject2DCollisionBox(player);
+    dojo::GameObject2DCollisionBox *cameraCollider = new dojo::GameObject2DCollisionBox(c);
+
+    HANDLER_INPUT hinputs;
+    hinputs.sprite = player;
+    hinputs.cameraCollider = cameraCollider;
+    hinputs.spriteCollider = playerCollider;
+    hinputs.window = window;
+    hinputs.camera = c;
 
     std::chrono::duration<double> frametime = std::chrono::milliseconds(50);
 
     while (window->isAlive()) {
         auto start = std::chrono::system_clock::now();
 
-        handleInputs(window, player);
+        handleInputs(&hinputs);
         window->clear();
         window->render2D(c, player);
         if (!player->nextFrame()) {
@@ -39,7 +55,6 @@ int main () {
                 player->setCurrentAnimation("default");
             }
         }
-        std::cout << player->currentFrame() << std::endl;
 
         auto end = std::chrono::system_clock::now();
 
@@ -57,22 +72,36 @@ int main () {
     return 0;
 }
 
-void handleInputs(dojo::Window *w, dojo::GameObject2DAnimatedSprite *s) {
-    if (w->KEYS[GLFW_KEY_A]) {
-        s->pos.x --;
+void handleInputs(HANDLER_INPUT *hinput) {
+    if (hinput->window->KEYS[GLFW_KEY_A]) {
+        if (hinput->spriteCollider->checkCollision(hinput->cameraCollider))
+            hinput->sprite->pos.x --;
+        else
+            hinput->sprite->pos.x = hinput->camera->pos.x;
+        std::cout << hinput->sprite->pos.x << " ," << hinput->sprite->pos.y << std::endl;
     }
-    if (w->KEYS[GLFW_KEY_D]) {
-        s->pos.x ++;
+    if (hinput->window->KEYS[GLFW_KEY_D]) {
+        if (hinput->spriteCollider->checkCollision(hinput->cameraCollider))
+            hinput->sprite->pos.x ++;
+        else
+            hinput->sprite->pos.x = hinput->camera->pos.x + hinput->camera->scale.x - hinput->sprite->scale.x;
+        std::cout << hinput->sprite->pos.x << " ," << hinput->sprite->pos.y << std::endl;
     }
-    if (w->KEYS[GLFW_KEY_S]) {
-        s->pos.y --;
+   if (hinput->window->KEYS[GLFW_KEY_S]) {
+        if (hinput->spriteCollider->checkCollision(hinput->cameraCollider))
+            hinput->sprite->pos.y --;
+        else
+            hinput->sprite->pos.y = hinput->camera->pos.y;
+        std::cout << hinput->sprite->pos.x << " ," << hinput->sprite->pos.y << std::endl;
     }
-    if (w->KEYS[GLFW_KEY_W]) {
-        s->pos.y ++;
+    if (hinput->window->KEYS[GLFW_KEY_W]) {
+        if (hinput->spriteCollider->checkCollision(hinput->cameraCollider))
+            hinput->sprite->pos.y ++;
+        else
+            hinput->sprite->pos.y = hinput->camera->pos.y + hinput->camera->scale.y - hinput->sprite->scale.y;
+        std::cout << hinput->sprite->pos.x << " ," << hinput->sprite->pos.y << std::endl;
     }
-    if (w->KEYS[GLFW_KEY_F]) {
-        s->flip = !(s->flip);
+    if (hinput->window->KEYS[GLFW_KEY_F]) {
+        hinput->sprite->flip = !(hinput->sprite->flip);
     }
-        std::cout << "pos: " << s->pos.x << ", " << s->pos.y << ", " << s->pos.z 
-            << " | scale: " << s->scale.x << ", " << s->scale.y << ", " << s->scale.z << std::endl;
 }

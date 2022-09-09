@@ -9,6 +9,8 @@ namespace dojo {
 class GameObject2DSprite : public GameObject, public Renderable {
     public:
         GameObject2DSprite(std::string spritePath);
+        GameObject2DSprite(unsigned int texture, unsigned int vertexArrayObject, unsigned int shaderProgram);
+        GameObject2DSprite(GameObject2DSprite *obj);
         ~GameObject2DSprite();
 
         unsigned int texture;

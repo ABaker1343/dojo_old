@@ -24,6 +24,18 @@ GameObject2DSprite::GameObject2DSprite(std::string spritePath) : GameObject() {
 
 }
 
+GameObject2DSprite::GameObject2DSprite(unsigned int texture, unsigned int vertexArrayObject, unsigned int shaderProgram) : GameObject() {
+    texture = texture;
+    vertexArrayObject = vertexArrayObject;
+    shaderProgram = shaderProgram;
+}
+
+GameObject2DSprite::GameObject2DSprite(GameObject2DSprite* obj) : GameObject() {
+    texture = obj->texture;
+    shaderProgram = obj->shaderProgram;
+    vertexArrayObject = obj->vertexArrayObject;
+}
+
 GameObject2DSprite::~GameObject2DSprite() {
     delete vertices;
     delete elements;

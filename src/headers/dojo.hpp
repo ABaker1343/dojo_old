@@ -2,3 +2,6 @@
 #include "gameObject.hpp"
 #include "renderable.hpp"
 #include "gameObject2DSprite.hpp"
+#include "gameObject2DAnimatedSprite.hpp"
+#include "gameObject2DCollisionBox.hpp"
+#include "camera2D.hpp"

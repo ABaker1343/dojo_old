@@ -25,6 +25,8 @@ void main () {
 
     renderPos = (objectScale * aPos) + worldPos;
     renderPos = (renderPos * cameraTransform) - cameraPos;
+    renderPos = renderPos * 2;
+    renderPos = renderPos - 1.0;
 
     texPos.x = inTexPos.x + (animationFrame * animationChunkSize);
     texPos.y = inTexPos.y;

@@ -12,6 +12,7 @@ namespace dojo {
 class GameObject2DAnimatedSprite : public GameObject, public Renderable {
     public:
         GameObject2DAnimatedSprite(int numFrames, std::string animationPath);
+        GameObject2DAnimatedSprite(GameObject2DAnimatedSprite* obj);
         ~GameObject2DAnimatedSprite();
 
         void addAnimation(std::string name, int numFrames, std::string animationPath);
