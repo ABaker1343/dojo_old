@@ -34,6 +34,7 @@ GameObject2DSprite::GameObject2DSprite(GameObject2DSprite* obj) : GameObject() {
     texture = obj->texture;
     shaderProgram = obj->shaderProgram;
     vertexArrayObject = obj->vertexArrayObject;
+    elements = obj->elements;
 }
 
 GameObject2DSprite::~GameObject2DSprite() {
