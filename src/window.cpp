@@ -1,4 +1,5 @@
 #include "headers/window.hpp"
+#include "headers/renderable.hpp"
 
 namespace dojo {
 
@@ -27,6 +28,7 @@ Window::Window(int width, int height, const char* name) {
     glfwSetFramebufferSizeCallback(window, windowResizeCallback);
     glfwSetKeyCallback(window, keyCallback);
     
+    createCollisionBoxRenderDependancies();
 
 }
 
@@ -117,6 +119,72 @@ void Window::render2D(Camera2D *c, GameObject2DAnimatedSprite *s) {
     glUniform1f(animationChunkSizeUniformLocation, s->currentAnimationChunkSize());
 
     glDrawElements(GL_TRIANGLES, s->numElements(), GL_UNSIGNED_INT, 0);
+}
+
+void Window::render2D(Camera2D *c, GameObject2DCollisionBox *b) {
+    glUseProgram(collisionBox2DShaderProgram);
+    glBindVertexArray(collisionBoxVertexArray);
+    
+    //int flipUniformPos = glGetUniformLocation(collisionBox2DShaderProgram, "flip");
+    //glUniform1i(flipUniformPos, b->flip);
+
+    int worldPosUniformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "worldPos");
+    glUniform3fv(worldPosUniformLocation, 1, glm::value_ptr(*b->objPos));
+
+    int scaleUniformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "objectScale");
+    glUniform3fv(scaleUniformLocation, 1, glm::value_ptr(*b->objScale));
+
+    int cameraPosUniformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "cameraPos");
+    glUniform3fv(cameraPosUniformLocation, 1, glm::value_ptr(c->pos));
+
+    int cameraScaleUniformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "cameraScale");
+    glUniform3fv(cameraScaleUniformLocation, 1, glm::value_ptr(c->scale));
+
+    int offsetLocation = glGetUniformLocation(collisionBox2DShaderProgram, "offset");
+    int scaleLocation = glGetUniformLocation(collisionBox2DShaderProgram, "scale");
+
+    glUniform3fv(offsetLocation, 1, glm::value_ptr(b->relativeOffset));
+    glUniform3fv(scaleLocation, 1, glm::value_ptr(b->relativeScale));
+
+    glDrawElements(GL_TRIANGLES, boxElements->size(), GL_UNSIGNED_INT, 0);
+}
+
+void Window::createCollisionBoxRenderDependancies() {
+    // create the buffers
+
+    std::cout << "creating collider buffers" << std::endl;
+
+    boxVertices = new std::vector<float> {
+        0.0f, 0.0f, 0.0f,
+        0.f, 1.f, 0.f,
+        1.f, 1.f, 0.f,
+        1.f, 0.f, 0.f,
+    };
+
+    boxElements = new std::vector<unsigned int> {
+        0, 1, 2,
+        2, 3, 0
+    };
+
+    collisionBoxVertexBuffer = Renderable::createVertexBuffer(boxVertices);
+    glGenVertexArrays(1, &collisionBoxVertexArray);
+    glBindVertexArray(collisionBoxVertexArray);
+
+    glBindBuffer(GL_ARRAY_BUFFER, collisionBoxVertexBuffer);
+    std::cout << "creating element buffer" << std::endl;
+    glGenBuffers(1, &boxElementBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, boxElementBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * boxElements->size(), boxElements->data(), GL_STATIC_DRAW);
+
+    std::cout << "creating vertex atrrib" << std::endl;
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0 );
+    glEnableVertexAttribArray(0);
+    
+    // create shaders
+
+    std::cout << "creating collider shaders" << std::endl;
+    collisionBox2DShaderProgram = Renderable::createBasicShaderProgram("src/shaders/collisionBoxVert.vert", "src/shaders/collisionBoxFrag.frag");
+
 }
 
 }

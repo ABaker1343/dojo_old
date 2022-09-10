@@ -35,7 +35,8 @@ int main () {
 
     dojo::Camera2D *c = new dojo::Camera2D();
 
-    dojo::GameObject2DCollisionBox *playerCollider = new dojo::GameObject2DCollisionBox(player);
+    //dojo::GameObject2DCollisionBox *playerCollider = new dojo::GameObject2DCollisionBox(player);
+    dojo::GameObject2DCollisionBox *playerCollider = new dojo::GameObject2DCollisionBox(player, 0.25f, 0.25f, 0.5f, 0.5f);
     dojo::GameObject2DCollisionBox *cameraCollider = new dojo::GameObject2DCollisionBox(c);
 
     std::vector<dojo::GameObject2DSprite*> *objects = new std::vector<dojo::GameObject2DSprite*>;
@@ -78,6 +79,10 @@ int main () {
             window->render2D(c, *it);
         }
         window->render2D(c, player);
+        for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = colliders->begin(); it != colliders->end(); it++) {
+            window->render2D(c, *it);
+        }
+        window->render2D(c, playerCollider);
         if (!player->nextFrame()) {
             if (player->currentAnimationName() == "default") {
                 player->setCurrentAnimation("walking");
@@ -114,64 +119,68 @@ int main () {
 
 void handleInputs(HANDLER_INPUT *hinput) {
     if (hinput->window->KEYS[GLFW_KEY_A]) {
-        if (hinput->spriteCollider->checkCollisionWithOffset(hinput->cameraCollider, -hinput->spriteCollider->objScale->x, 0.f)) {
-            bool colliding = false;
-            for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = hinput->collisionBoxes->begin(); it != hinput->collisionBoxes->end(); it++)  {
-                if (hinput->spriteCollider->checkCollisionWithOffset(*it, -1.f, 0.f)) {
-                    colliding = true;
-                    break;
-                }
-            }
-            if (!colliding) {
-                hinput->sprite->pos.x --;
+        bool colliding = false;
+        for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = hinput->collisionBoxes->begin(); it != hinput->collisionBoxes->end(); it++)  {
+            if (hinput->spriteCollider->checkCollisionWithOffset(*it, -1.f, 0.f)) {
+                colliding = true;
+                break;
             }
         }
-        std::cout << hinput->sprite->pos.x << " ," << hinput->sprite->pos.y << std::endl;
+        if (!colliding) {
+            hinput->sprite->pos.x --;
+        }
+        if (hinput->spriteCollider->getAbsolutePos().x < hinput->cameraCollider->getAbsolutePos().x) {
+            hinput->sprite->pos.x = hinput->cameraCollider->getAbsolutePos().x - (hinput->spriteCollider->getAbsoluteOffset().x);
+        }
     }
     if (hinput->window->KEYS[GLFW_KEY_D]) {
-        if (hinput->spriteCollider->checkCollisionWithOffset(hinput->cameraCollider, hinput->spriteCollider->objScale->x, 0.f)) {
-            bool colliding = false;
-            for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = hinput->collisionBoxes->begin(); it != hinput->collisionBoxes->end(); it++)  {
-                if (hinput->spriteCollider->checkCollisionWithOffset(*it, 1.f, 0.f)) {
-                    colliding = true;
-                    break;
-                }
-            }
-            if (!colliding) {
-                hinput->sprite->pos.x ++;
+        bool colliding = false;
+        for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = hinput->collisionBoxes->begin(); it != hinput->collisionBoxes->end(); it++)  {
+            if (hinput->spriteCollider->checkCollisionWithOffset(*it, 1.f, 0.f)) {
+                colliding = true;
+                break;
             }
         }
-        std::cout << hinput->sprite->pos.x << " ," << hinput->sprite->pos.y << std::endl;
+        if (!colliding) {
+            hinput->sprite->pos.x ++;
+        }
+        if (hinput->spriteCollider->getAbsolutePos().x + hinput->spriteCollider->getAbsoluteScale().x > hinput->cameraCollider->getAbsolutePos().x + hinput->cameraCollider->getAbsoluteScale().x) {
+            hinput->sprite->pos.x = hinput->cameraCollider->getAbsolutePos().x + hinput->cameraCollider->getAbsoluteScale().x - (hinput->spriteCollider->getAbsoluteScale().x + hinput->spriteCollider->getAbsoluteOffset().x);
+        }
     }
     if (hinput->window->KEYS[GLFW_KEY_W]) {
-        if (hinput->spriteCollider->checkCollisionWithOffset(hinput->cameraCollider, 0.f, hinput->spriteCollider->objScale->y)) {
-            bool colliding = false;
-            for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = hinput->collisionBoxes->begin(); it != hinput->collisionBoxes->end(); it++)  {
-                if (hinput->spriteCollider->checkCollisionWithOffset(*it, 0.f, 1.f)) {
-                    colliding = true;
-                    break;
-                }
-            }
-            if (!colliding) {
-                hinput->sprite->pos.y ++;
+        bool colliding = false;
+        for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = hinput->collisionBoxes->begin(); it != hinput->collisionBoxes->end(); it++)  {
+            if (hinput->spriteCollider->checkCollisionWithOffset(*it, 0.f, 1.f)) {
+                colliding = true;
+                break;
             }
         }
-        std::cout << hinput->sprite->pos.x << " ," << hinput->sprite->pos.y << std::endl;
+        if (!colliding) {
+            hinput->sprite->pos.y ++;
+        }
+        if (hinput->spriteCollider->getAbsolutePos().y + hinput->spriteCollider->getAbsoluteScale().y > hinput->cameraCollider->getAbsolutePos().y + hinput->cameraCollider->getAbsoluteScale().y) {
+            std::cout << hinput->spriteCollider->getAbsolutePos().y + hinput->spriteCollider->getAbsoluteScale().y
+                << " : cameraScale:" << hinput->cameraCollider->getAbsolutePos().y
+                << " cameraScale: " << hinput->cameraCollider->getAbsoluteScale().y
+                << " : " << hinput->cameraCollider->getAbsolutePos().y + hinput->cameraCollider->getAbsoluteScale().y << std::endl;
+            hinput->sprite->pos.y = hinput->cameraCollider->getAbsolutePos().y + hinput->cameraCollider->getAbsoluteScale().y - (hinput->spriteCollider->getAbsoluteScale().y + hinput->spriteCollider->getAbsoluteOffset().y);
+        }
     }
     if (hinput->window->KEYS[GLFW_KEY_S]) {
-        if (hinput->spriteCollider->checkCollisionWithOffset(hinput->cameraCollider, 0.f, -hinput->spriteCollider->objScale->y)) {
-            bool colliding = false;
-            for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = hinput->collisionBoxes->begin(); it != hinput->collisionBoxes->end(); it++)  {
-                if (hinput->spriteCollider->checkCollisionWithOffset(*it, 0.f, -1.f)) {
-                    colliding = true;
-                    break;
-                }
-            }
-            if (!colliding) {
-                hinput->sprite->pos.y --;
+        bool colliding = false;
+        for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = hinput->collisionBoxes->begin(); it != hinput->collisionBoxes->end(); it++)  {
+            if (hinput->spriteCollider->checkCollisionWithOffset(*it, 0.f, -1.f)) {
+                colliding = true;
+                break;
             }
         }
-        std::cout << hinput->sprite->pos.x << " ," << hinput->sprite->pos.y << std::endl;
+        if (!colliding) {
+            hinput->sprite->pos.y --;
+        }
+        if (hinput->spriteCollider->getAbsolutePos().y < hinput->cameraCollider->getAbsolutePos().y) {
+            hinput->sprite->pos.y = hinput->cameraCollider->getAbsolutePos().y - (hinput->spriteCollider->relativeOffset.y * hinput->spriteCollider->objScale->y);
+        }
     }
     if (hinput->window->KEYS[GLFW_KEY_F]) {
         hinput->sprite->flip = !(hinput->sprite->flip);
