@@ -22,12 +22,15 @@ GameObject2DSprite::GameObject2DSprite(std::string spritePath) : GameObject() {
     shaderProgram = Renderable::createBasicShaderProgram("src/shaders/basicVert.vert", "src/shaders/basicFrag.frag");
     texture = Renderable::loadTextureFromFile(spritePath.c_str());
 
+    flip = 0;
+
 }
 
 GameObject2DSprite::GameObject2DSprite(unsigned int texture, unsigned int vertexArrayObject, unsigned int shaderProgram) : GameObject() {
     texture = texture;
     vertexArrayObject = vertexArrayObject;
     shaderProgram = shaderProgram;
+    flip = 0;
 }
 
 GameObject2DSprite::GameObject2DSprite(GameObject2DSprite* obj) : GameObject() {
@@ -35,6 +38,7 @@ GameObject2DSprite::GameObject2DSprite(GameObject2DSprite* obj) : GameObject() {
     shaderProgram = obj->shaderProgram;
     vertexArrayObject = obj->vertexArrayObject;
     elements = obj->elements;
+    flip = obj->flip;
 }
 
 GameObject2DSprite::~GameObject2DSprite() {

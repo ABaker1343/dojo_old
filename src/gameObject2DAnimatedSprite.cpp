@@ -34,6 +34,8 @@ GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(int numFrames, std::strin
     animations->insert({"default", baseAnimation});
     currentAnimation = &(*animations)["default"];
 
+    flip = 0;
+
 }
 
 GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(GameObject2DAnimatedSprite *obj) : GameObject() {
@@ -44,6 +46,7 @@ GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(GameObject2DAnimatedSprit
     glBindVertexArray(vertexArrayObject);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, (*animations)["default"].vertexBuffer);
+    flip = obj->flip;
 }
 
 GameObject2DAnimatedSprite::~GameObject2DAnimatedSprite() {

@@ -160,10 +160,6 @@ void handleInputs(HANDLER_INPUT *hinput) {
             hinput->sprite->pos.y ++;
         }
         if (hinput->spriteCollider->getAbsolutePos().y + hinput->spriteCollider->getAbsoluteScale().y > hinput->cameraCollider->getAbsolutePos().y + hinput->cameraCollider->getAbsoluteScale().y) {
-            std::cout << hinput->spriteCollider->getAbsolutePos().y + hinput->spriteCollider->getAbsoluteScale().y
-                << " : cameraScale:" << hinput->cameraCollider->getAbsolutePos().y
-                << " cameraScale: " << hinput->cameraCollider->getAbsoluteScale().y
-                << " : " << hinput->cameraCollider->getAbsolutePos().y + hinput->cameraCollider->getAbsoluteScale().y << std::endl;
             hinput->sprite->pos.y = hinput->cameraCollider->getAbsolutePos().y + hinput->cameraCollider->getAbsoluteScale().y - (hinput->spriteCollider->getAbsoluteScale().y + hinput->spriteCollider->getAbsoluteOffset().y);
         }
     }

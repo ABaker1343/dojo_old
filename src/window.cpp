@@ -23,6 +23,10 @@ Window::Window(int width, int height, const char* name) {
         throw std::runtime_error("failed to load opengl functions");
     }
 
+    // allow color blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glViewport(0, 0, width, height);
     
     glfwSetFramebufferSizeCallback(window, windowResizeCallback);
@@ -33,6 +37,13 @@ Window::Window(int width, int height, const char* name) {
 }
 
 Window::~Window() {
+    delete boxElements;
+    delete boxVertices;
+
+    glDeleteBuffers(1, &boxElementBuffer);
+    glDeleteBuffers(1, &collisionBoxVertexBuffer);
+    glDeleteVertexArrays(1, &collisionBoxVertexArray);
+
     glfwDestroyWindow(window);
     glfwTerminate();
 }
@@ -152,7 +163,6 @@ void Window::render2D(Camera2D *c, GameObject2DCollisionBox *b) {
 void Window::createCollisionBoxRenderDependancies() {
     // create the buffers
 
-    std::cout << "creating collider buffers" << std::endl;
 
     boxVertices = new std::vector<float> {
         0.0f, 0.0f, 0.0f,
@@ -171,18 +181,15 @@ void Window::createCollisionBoxRenderDependancies() {
     glBindVertexArray(collisionBoxVertexArray);
 
     glBindBuffer(GL_ARRAY_BUFFER, collisionBoxVertexBuffer);
-    std::cout << "creating element buffer" << std::endl;
     glGenBuffers(1, &boxElementBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, boxElementBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * boxElements->size(), boxElements->data(), GL_STATIC_DRAW);
 
-    std::cout << "creating vertex atrrib" << std::endl;
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0 );
     glEnableVertexAttribArray(0);
     
     // create shaders
 
-    std::cout << "creating collider shaders" << std::endl;
     collisionBox2DShaderProgram = Renderable::createBasicShaderProgram("src/shaders/collisionBoxVert.vert", "src/shaders/collisionBoxFrag.frag");
 
 }
