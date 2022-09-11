@@ -20,7 +20,8 @@ void main () {
     cameraTransform.y = 1 / cameraScale.y;
     cameraTransform.z = cameraScale.z;
 
-    renderPos = (scale * objectScale * aPos) + worldPos + (offset * objectScale);
+    //renderPos = (scale * objectScale * aPos) + worldPos + (offset * objectScale);
+    renderPos = (objectScale * aPos) + worldPos;
     renderPos = (renderPos * cameraTransform) - cameraPos;
     renderPos = renderPos * 2;
     renderPos = renderPos - 1.0;

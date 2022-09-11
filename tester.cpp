@@ -36,7 +36,7 @@ int main () {
     dojo::Camera2D *c = new dojo::Camera2D();
 
     //dojo::GameObject2DCollisionBox *playerCollider = new dojo::GameObject2DCollisionBox(player);
-    dojo::GameObject2DCollisionBox *playerCollider = new dojo::GameObject2DCollisionBox(player, 0.25f, 0.25f, 0.5f, 0.5f);
+    dojo::GameObject2DCollisionBox *playerCollider = new dojo::GameObject2DCollisionBox(player, 0.5f, 0.5f, 0.5f, 0.5f);
     dojo::GameObject2DCollisionBox *cameraCollider = new dojo::GameObject2DCollisionBox(c);
 
     std::vector<dojo::GameObject2DSprite*> *objects = new std::vector<dojo::GameObject2DSprite*>;
@@ -68,7 +68,6 @@ int main () {
     hinputs.collisionBoxes = colliders;
 
     std::chrono::duration<double> frametime = std::chrono::milliseconds(50);
-
 
     while (window->isAlive()) {
         auto start = std::chrono::system_clock::now();
@@ -180,5 +179,8 @@ void handleInputs(HANDLER_INPUT *hinput) {
     }
     if (hinput->window->KEYS[GLFW_KEY_F]) {
         hinput->sprite->flip = !(hinput->sprite->flip);
+    }
+    if (hinput->window->KEYS[GLFW_KEY_ESCAPE]) {
+        hinput->window->setKill();
     }
 }

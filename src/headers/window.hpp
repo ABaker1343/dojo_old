@@ -26,6 +26,7 @@ namespace dojo {
 
             void clear();
             bool isAlive();
+            void setKill();
             void render2D(Camera2D *c, GameObject2DSprite *s);
             void render2D(Camera2D *c, GameObject2DAnimatedSprite *s);
             void render2D(Camera2D *c, GameObject2DCollisionBox *b);

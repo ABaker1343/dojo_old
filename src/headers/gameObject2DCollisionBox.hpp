@@ -13,6 +13,8 @@ class GameObject2DCollisionBox {
         bool checkCollision(GameObject2DCollisionBox* box);
         bool checkCollisionWithOffset(GameObject2DCollisionBox* box, float offsetx, float offsety);
 
+        int *flip;
+
         glm::vec3 getAbsolutePos();
         glm::vec3 getAbsoluteScale();
         glm::vec3 getAbsoluteOffset();

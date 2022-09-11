@@ -18,8 +18,6 @@ class Renderable {
 
         unsigned int shaderProgram;
 
-        int flip;
-
         int numElements();
 
         static void create2DBuffers(unsigned int &vertexArrayObject, unsigned int &vertexBuffer, unsigned int &elementBuffer,

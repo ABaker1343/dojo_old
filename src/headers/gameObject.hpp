@@ -9,6 +9,7 @@ namespace dojo {
             GameObject();
             ~GameObject();
 
+            int flip;
             glm::vec3 pos;
             glm::vec3 scale;
 

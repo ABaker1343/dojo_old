@@ -65,6 +65,10 @@ bool Window::isAlive() {
     return ! glfwWindowShouldClose(window);
 }
 
+void Window::setKill() {
+    glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
+
 void Window::clear() {
     glfwSwapBuffers(window);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -136,14 +140,11 @@ void Window::render2D(Camera2D *c, GameObject2DCollisionBox *b) {
     glUseProgram(collisionBox2DShaderProgram);
     glBindVertexArray(collisionBoxVertexArray);
     
-    //int flipUniformPos = glGetUniformLocation(collisionBox2DShaderProgram, "flip");
-    //glUniform1i(flipUniformPos, b->flip);
-
     int worldPosUniformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "worldPos");
-    glUniform3fv(worldPosUniformLocation, 1, glm::value_ptr(*b->objPos));
+    glUniform3fv(worldPosUniformLocation, 1, glm::value_ptr(b->getAbsolutePos()));
 
     int scaleUniformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "objectScale");
-    glUniform3fv(scaleUniformLocation, 1, glm::value_ptr(*b->objScale));
+    glUniform3fv(scaleUniformLocation, 1, glm::value_ptr(b->getAbsoluteScale()));
 
     int cameraPosUniformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "cameraPos");
     glUniform3fv(cameraPosUniformLocation, 1, glm::value_ptr(c->pos));
@@ -151,11 +152,11 @@ void Window::render2D(Camera2D *c, GameObject2DCollisionBox *b) {
     int cameraScaleUniformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "cameraScale");
     glUniform3fv(cameraScaleUniformLocation, 1, glm::value_ptr(c->scale));
 
-    int offsetLocation = glGetUniformLocation(collisionBox2DShaderProgram, "offset");
-    int scaleLocation = glGetUniformLocation(collisionBox2DShaderProgram, "scale");
+    //int offsetLocation = glGetUniformLocation(collisionBox2DShaderProgram, "offset");
+    //int scaleLocation = glGetUniformLocation(collisionBox2DShaderProgram, "scale");
 
-    glUniform3fv(offsetLocation, 1, glm::value_ptr(b->relativeOffset));
-    glUniform3fv(scaleLocation, 1, glm::value_ptr(b->relativeScale));
+    //glUniform3fv(offsetLocation, 1, glm::value_ptr(b->relativeOffset));
+    //glUniform3fv(scaleLocation, 1, glm::value_ptr(b->relativeScale));
 
     glDrawElements(GL_TRIANGLES, boxElements->size(), GL_UNSIGNED_INT, 0);
 }
