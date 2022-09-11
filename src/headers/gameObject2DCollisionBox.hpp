@@ -10,6 +10,8 @@ class GameObject2DCollisionBox {
         GameObject2DCollisionBox(GameObject *obj, float relativeOffsetX = 0.f, float relativeOffsetY = 0.f, float relativeScaleX = 1.f, float relativeScaleY = 1.f);
         ~GameObject2DCollisionBox();
 
+        typedef enum SIDE_ENUM {left, right, top, bottom} SIDE;
+
         bool checkCollision(GameObject2DCollisionBox* box);
         bool checkCollisionWithOffset(GameObject2DCollisionBox* box, float offsetx, float offsety);
 
@@ -19,12 +21,15 @@ class GameObject2DCollisionBox {
         glm::vec3 getAbsoluteScale();
         glm::vec3 getAbsoluteOffset();
 
+        void clampToCollider(GameObject2DCollisionBox *box, SIDE side);
+
         glm::vec3 relativeOffset;
         glm::vec3 relativeScale;
 
         GameObject *owner;
         glm::vec3 *objPos;
         glm::vec3 *objScale;
+
 };
 
 }

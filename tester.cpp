@@ -122,6 +122,7 @@ void handleInputs(HANDLER_INPUT *hinput) {
         for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = hinput->collisionBoxes->begin(); it != hinput->collisionBoxes->end(); it++)  {
             if (hinput->spriteCollider->checkCollisionWithOffset(*it, -1.f, 0.f)) {
                 colliding = true;
+                hinput->spriteCollider->clampToCollider(*it, dojo::GameObject2DCollisionBox::right);
                 break;
             }
         }
@@ -137,6 +138,7 @@ void handleInputs(HANDLER_INPUT *hinput) {
         for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = hinput->collisionBoxes->begin(); it != hinput->collisionBoxes->end(); it++)  {
             if (hinput->spriteCollider->checkCollisionWithOffset(*it, 1.f, 0.f)) {
                 colliding = true;
+                hinput->spriteCollider->clampToCollider(*it, dojo::GameObject2DCollisionBox::left);
                 break;
             }
         }
@@ -152,6 +154,7 @@ void handleInputs(HANDLER_INPUT *hinput) {
         for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = hinput->collisionBoxes->begin(); it != hinput->collisionBoxes->end(); it++)  {
             if (hinput->spriteCollider->checkCollisionWithOffset(*it, 0.f, 1.f)) {
                 colliding = true;
+                hinput->spriteCollider->clampToCollider(*it, dojo::GameObject2DCollisionBox::bottom);
                 break;
             }
         }
@@ -167,6 +170,7 @@ void handleInputs(HANDLER_INPUT *hinput) {
         for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = hinput->collisionBoxes->begin(); it != hinput->collisionBoxes->end(); it++)  {
             if (hinput->spriteCollider->checkCollisionWithOffset(*it, 0.f, -1.f)) {
                 colliding = true;
+                hinput->spriteCollider->clampToCollider(*it, dojo::GameObject2DCollisionBox::top);
                 break;
             }
         }

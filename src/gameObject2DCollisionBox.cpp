@@ -99,4 +99,21 @@ glm::vec3 GameObject2DCollisionBox::getAbsoluteOffset() {
     return absoluteOffset;
 }
 
+void GameObject2DCollisionBox::clampToCollider(GameObject2DCollisionBox *box, SIDE side) {
+    switch (side) {
+        case left:
+            this->objPos->x = box->getAbsolutePos().x - this->getAbsoluteScale().x - this->getAbsoluteOffset().x;
+            break;
+        case right:
+            this->objPos->x = box->getAbsolutePos().x + box->getAbsoluteScale().x - this->getAbsoluteOffset().y;
+            break;
+        case bottom:
+            this->objPos->y = box->getAbsolutePos().y - this->getAbsoluteScale().y - this->getAbsoluteOffset().y;
+            break;
+        case top:
+            this->objPos->y = box->getAbsolutePos().y + box->getAbsoluteScale().y - this->getAbsoluteOffset().y;
+            break;
+    }
+}
+
 }
