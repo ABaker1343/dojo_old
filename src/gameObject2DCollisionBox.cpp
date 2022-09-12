@@ -115,7 +115,7 @@ void GameObject2DCollisionBox::clampToCollider(GameObject2DCollisionBox *box, SI
             this->owner->transform[3][0] = box->getAbsolutePos().x - this->getAbsoluteScale().x - this->getAbsoluteOffset().x;
             break;
         case right:
-            this->owner->transform[3][0] = box->getAbsolutePos().x + box->getAbsoluteScale().x - this->getAbsoluteOffset().y;
+            this->owner->transform[3][0] = box->getAbsolutePos().x + box->getAbsoluteScale().x - this->getAbsoluteOffset().x;
             break;
         case bottom:
             this->owner->transform[3][1] = box->getAbsolutePos().y - this->getAbsoluteScale().y - this->getAbsoluteOffset().y;

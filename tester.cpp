@@ -29,10 +29,11 @@ int main () {
     dojo::Window *window = new dojo::Window(500, 500, "dojoWindow");
 
     //dojo::GameObject2DSprite *player = new dojo::GameObject2DSprite("bgCatAndSakura.jpg");
-    dojo::GameObject2DAnimatedSprite *player = new dojo::GameObject2DAnimatedSprite(4, "animation0.jpg");
+    dojo::GameObject2DAnimatedSprite *player = new dojo::GameObject2DAnimatedSprite(4, "animation0.jpg", glm::vec3(-2.f, -1.f, 0.f), glm::vec3(5.f, 2.f, 1.f));
     player->addAnimation("walking", 4, "makima.jpg");
 
-    player->setScale(5, 5);
+    //player->setScale(5, 5);
+    
 
     dojo::Camera3D *c = new dojo::Camera3D();
 

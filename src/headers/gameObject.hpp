@@ -7,7 +7,7 @@
 namespace dojo {
     class GameObject {
         public:
-            GameObject();
+            GameObject(glm::vec3 pos = glm::vec3(0.f, 0.f, 0.f), glm::vec3 scale = glm::vec3(1.f, 1.f, 1.f));
             ~GameObject();
 
             int flip;

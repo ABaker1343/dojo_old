@@ -2,8 +2,10 @@
 
 namespace dojo {
 
-GameObject::GameObject() {
+GameObject::GameObject(glm::vec3 pos, glm::vec3 scale) {
     transform = glm::mat4(1.0f);
+    transform = glm::translate(transform, pos);
+    transform = glm::scale(transform, scale);
 
     flip = 0;
 }

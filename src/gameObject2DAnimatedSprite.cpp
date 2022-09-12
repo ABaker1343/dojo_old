@@ -3,7 +3,8 @@
 
 namespace dojo {
 
-GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(int numFrames, std::string animationPath) : GameObject() {
+GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(int numFrames, std::string animationPath,
+        glm::vec3 pos, glm::vec3 scale) : GameObject(pos, scale) {
 
     animations = new std::unordered_map<std::string, ANIMATION>();
     ANIMATION baseAnimation;
@@ -38,7 +39,8 @@ GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(int numFrames, std::strin
 
 }
 
-GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(GameObject2DAnimatedSprite *obj) : GameObject() {
+GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(GameObject2DAnimatedSprite *obj,
+        glm::vec3 pos, glm::vec3 scale) : GameObject(pos, scale) {
     animations = obj->animations;
     currentAnimation = &(*animations)["default"];
     elementBuffer = obj->elementBuffer;
