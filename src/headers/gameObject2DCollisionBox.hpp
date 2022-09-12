@@ -20,6 +20,7 @@ class GameObject2DCollisionBox {
         glm::vec3 getAbsolutePos();
         glm::vec3 getAbsoluteScale();
         glm::vec3 getAbsoluteOffset();
+        glm::mat4 getTransform();
 
         void clampToCollider(GameObject2DCollisionBox *box, SIDE side);
 
@@ -27,8 +28,8 @@ class GameObject2DCollisionBox {
         glm::vec3 relativeScale;
 
         GameObject *owner;
-        glm::vec3 *objPos;
-        glm::vec3 *objScale;
+        //glm::vec3 *objPos;
+        //glm::vec3 *objScale;
 
 };
 

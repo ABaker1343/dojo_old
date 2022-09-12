@@ -14,7 +14,7 @@
 typedef struct INPUT_HANDLER_INPUTS {
     dojo::Window* window;
     dojo::GameObject2DAnimatedSprite *sprite;
-    dojo::Camera2D *camera;
+    dojo::Camera3D *camera;
     dojo::GameObject2DCollisionBox *spriteCollider;
     dojo::GameObject2DCollisionBox *cameraCollider;
     std::vector<dojo::GameObject2DCollisionBox*> *collisionBoxes;
@@ -31,9 +31,10 @@ int main () {
     //dojo::GameObject2DSprite *player = new dojo::GameObject2DSprite("bgCatAndSakura.jpg");
     dojo::GameObject2DAnimatedSprite *player = new dojo::GameObject2DAnimatedSprite(4, "animation0.jpg");
     player->addAnimation("walking", 4, "makima.jpg");
-    player->scale.x = 5; player->scale.y = 5;
 
-    dojo::Camera2D *c = new dojo::Camera2D();
+    player->setScale(5, 5);
+
+    dojo::Camera3D *c = new dojo::Camera3D();
 
     //dojo::GameObject2DCollisionBox *playerCollider = new dojo::GameObject2DCollisionBox(player);
     dojo::GameObject2DCollisionBox *playerCollider = new dojo::GameObject2DCollisionBox(player, 0.5f, 0.5f, 0.5f, 0.5f);
@@ -43,8 +44,11 @@ int main () {
     std::vector<dojo::GameObject2DCollisionBox*> *colliders = new std::vector<dojo::GameObject2DCollisionBox*>;
     
     dojo::GameObject2DSprite *initialSprite = new dojo::GameObject2DSprite("texture.png");
-    initialSprite->pos.x = rand() % (int)c->scale.x;
-    initialSprite->pos.y = rand() % (int)c->scale.y;
+    initialSprite->setPos(
+            (rand() % 30) - 15,
+            (rand() % 30) - 15
+            );
+    initialSprite->setScale(2, 2);
     dojo::GameObject2DCollisionBox *initialCollider = new dojo::GameObject2DCollisionBox(initialSprite);
     objects->push_back(initialSprite);
     colliders->push_back(initialCollider);
@@ -52,8 +56,11 @@ int main () {
 
     for (int i = 0; i < 10; i++) {
         dojo::GameObject2DSprite *newObj = new dojo::GameObject2DSprite(initialSprite);
-        newObj->pos.x = rand() % (int)c->scale.x;
-        newObj->pos.y = rand() % (int)c->scale.y;
+        newObj->setScale(2,2);
+    newObj->setPos(
+            (rand() % 30) - 15,
+            (rand() % 30) - 15
+            );
         dojo::GameObject2DCollisionBox *newCollider = new dojo::GameObject2DCollisionBox(newObj);
         objects->push_back(newObj);
         colliders->push_back(newCollider);
@@ -74,14 +81,14 @@ int main () {
 
         handleInputs(&hinputs);
         window->clear();
-        for (std::vector<dojo::GameObject2DSprite*>::iterator it = objects->begin(); it != objects->end(); it++){
-            window->render2D(c, *it);
-        }
-        window->render2D(c, player);
+        window->render(c, playerCollider);
         for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = colliders->begin(); it != colliders->end(); it++) {
-            window->render2D(c, *it);
+            window->render(c, *it);
         }
-        window->render2D(c, playerCollider);
+        for (std::vector<dojo::GameObject2DSprite*>::iterator it = objects->begin(); it != objects->end(); it++){
+            window->render(c, *it);
+        }
+        window->render(c, player);
         if (!player->nextFrame()) {
             if (player->currentAnimationName() == "default") {
                 player->setCurrentAnimation("walking");
@@ -127,10 +134,11 @@ void handleInputs(HANDLER_INPUT *hinput) {
             }
         }
         if (!colliding) {
-            hinput->sprite->pos.x --;
-        }
-        if (hinput->spriteCollider->getAbsolutePos().x < hinput->cameraCollider->getAbsolutePos().x) {
-            hinput->sprite->pos.x = hinput->cameraCollider->getAbsolutePos().x - (hinput->spriteCollider->getAbsoluteOffset().x);
+            //hinput->sprite->pos.x --;
+            hinput->sprite->setPos(
+                    hinput->sprite->getPos().x - 1,
+                    hinput->sprite->getPos().y
+                    );
         }
     }
     if (hinput->window->KEYS[GLFW_KEY_D]) {
@@ -143,10 +151,10 @@ void handleInputs(HANDLER_INPUT *hinput) {
             }
         }
         if (!colliding) {
-            hinput->sprite->pos.x ++;
-        }
-        if (hinput->spriteCollider->getAbsolutePos().x + hinput->spriteCollider->getAbsoluteScale().x > hinput->cameraCollider->getAbsolutePos().x + hinput->cameraCollider->getAbsoluteScale().x) {
-            hinput->sprite->pos.x = hinput->cameraCollider->getAbsolutePos().x + hinput->cameraCollider->getAbsoluteScale().x - (hinput->spriteCollider->getAbsoluteScale().x + hinput->spriteCollider->getAbsoluteOffset().x);
+            hinput->sprite->setPos(
+                    hinput->sprite->getPos().x + 1,
+                    hinput->sprite->getPos().y
+                    );
         }
     }
     if (hinput->window->KEYS[GLFW_KEY_W]) {
@@ -159,10 +167,10 @@ void handleInputs(HANDLER_INPUT *hinput) {
             }
         }
         if (!colliding) {
-            hinput->sprite->pos.y ++;
-        }
-        if (hinput->spriteCollider->getAbsolutePos().y + hinput->spriteCollider->getAbsoluteScale().y > hinput->cameraCollider->getAbsolutePos().y + hinput->cameraCollider->getAbsoluteScale().y) {
-            hinput->sprite->pos.y = hinput->cameraCollider->getAbsolutePos().y + hinput->cameraCollider->getAbsoluteScale().y - (hinput->spriteCollider->getAbsoluteScale().y + hinput->spriteCollider->getAbsoluteOffset().y);
+            hinput->sprite->setPos(
+                    hinput->sprite->getPos().x,
+                    hinput->sprite->getPos().y + 1
+                    );
         }
     }
     if (hinput->window->KEYS[GLFW_KEY_S]) {
@@ -175,10 +183,10 @@ void handleInputs(HANDLER_INPUT *hinput) {
             }
         }
         if (!colliding) {
-            hinput->sprite->pos.y --;
-        }
-        if (hinput->spriteCollider->getAbsolutePos().y < hinput->cameraCollider->getAbsolutePos().y) {
-            hinput->sprite->pos.y = hinput->cameraCollider->getAbsolutePos().y - (hinput->spriteCollider->relativeOffset.y * hinput->spriteCollider->objScale->y);
+            hinput->sprite->setPos(
+                    hinput->sprite->getPos().x,
+                    hinput->sprite->getPos().y - 1
+                    );
         }
     }
     if (hinput->window->KEYS[GLFW_KEY_F]) {
@@ -187,4 +195,10 @@ void handleInputs(HANDLER_INPUT *hinput) {
     if (hinput->window->KEYS[GLFW_KEY_ESCAPE]) {
         hinput->window->setKill();
     }
+
+    std::cout 
+        << hinput->sprite->getPos().x << " "
+        << hinput->sprite->getPos().y << " "
+        << hinput->sprite->getPos().z << " "
+    << std::endl;
 }

@@ -4,8 +4,8 @@
 namespace dojo {
 
 GameObject2DCollisionBox::GameObject2DCollisionBox(GameObject *obj, float relativeOffsetX, float relativeOffsetY, float relativeScaleX, float relativeScaleY) {
-    objPos = &(obj->pos);
-    objScale = &(obj->scale);
+    //objPos = &(obj->pos);
+    //objScale = &(obj->scale);
 
     relativeOffset.x = relativeOffsetX;
     relativeOffset.y = relativeOffsetY;
@@ -69,51 +69,73 @@ bool GameObject2DCollisionBox::checkCollisionWithOffset(GameObject2DCollisionBox
 }
 
 glm::vec3 GameObject2DCollisionBox::getAbsolutePos() {
+
+    //opengl uses column major:
+    //mat[col][row]
+
     glm::vec3 absolutePos;
+
+    auto ownerPos = this->owner->getPos();
+    auto ownerScale = this->owner->getScale();
+
     if (*flip == 0) {
-        absolutePos.x = this->objPos->x + (this->objScale->x * this->relativeOffset.x);
-        absolutePos.y  = this->objPos->y + (this->objScale->y * this->relativeOffset.y);
-        absolutePos.z = 0;
-    }
-    else {
-        absolutePos.x = this->objPos->x + this->objScale->x - (this->objScale->x * this->relativeScale.x);
-        absolutePos.y  = this->objPos->y + (this->objScale->y * this->relativeOffset.y);
-        absolutePos.z = 0;
-        absolutePos.x = absolutePos.x - getAbsoluteScale().x;
+        absolutePos.x = ownerPos.x + (ownerScale.x * this->relativeOffset.x);
+        absolutePos.y = ownerPos.y + (ownerScale.y * this->relativeOffset.y);
+        absolutePos.z = ownerPos.z + (ownerScale.z * this->relativeOffset.z);
+    } else {
+        absolutePos.x = ownerPos.x + ownerScale.x - (ownerScale.x * this->relativeScale.x);
+        absolutePos.y = ownerPos.y + (ownerScale.y * this->relativeOffset.y);
+        absolutePos.z = ownerPos.z + (ownerScale.z * this->relativeOffset.z);
     }
 
     return absolutePos;
+
+
 }
 
 glm::vec3 GameObject2DCollisionBox::getAbsoluteScale() {
     glm::vec3 absoluteScale;
-    absoluteScale.x = (this->objScale->x * this->relativeScale.x);
-    absoluteScale.y = (this->objScale->y * this->relativeScale.y);
-    absoluteScale.z = 0;
+
+    absoluteScale.x = this->owner->getScale().x * this->relativeScale.x;
+    absoluteScale.y = this->owner->getScale().y * this->relativeScale.y;
+    absoluteScale.z = this->owner->getScale().z;
+
     return absoluteScale;
 }
 
 glm::vec3 GameObject2DCollisionBox::getAbsoluteOffset() {
     glm::vec3 absoluteOffset;
-    absoluteOffset = getAbsolutePos() - *this->objPos;
+    absoluteOffset = getAbsolutePos() - this->owner->getPos();
     return absoluteOffset;
 }
 
 void GameObject2DCollisionBox::clampToCollider(GameObject2DCollisionBox *box, SIDE side) {
     switch (side) {
         case left:
-            this->objPos->x = box->getAbsolutePos().x - this->getAbsoluteScale().x - this->getAbsoluteOffset().x;
+            this->owner->transform[3][0] = box->getAbsolutePos().x - this->getAbsoluteScale().x - this->getAbsoluteOffset().x;
             break;
         case right:
-            this->objPos->x = box->getAbsolutePos().x + box->getAbsoluteScale().x - this->getAbsoluteOffset().y;
+            this->owner->transform[3][0] = box->getAbsolutePos().x + box->getAbsoluteScale().x - this->getAbsoluteOffset().y;
             break;
         case bottom:
-            this->objPos->y = box->getAbsolutePos().y - this->getAbsoluteScale().y - this->getAbsoluteOffset().y;
+            this->owner->transform[3][1] = box->getAbsolutePos().y - this->getAbsoluteScale().y - this->getAbsoluteOffset().y;
             break;
         case top:
-            this->objPos->y = box->getAbsolutePos().y + box->getAbsoluteScale().y - this->getAbsoluteOffset().y;
+            this->owner->transform[3][1] = box->getAbsolutePos().y + box->getAbsoluteScale().y - this->getAbsoluteOffset().y;
             break;
     }
+}
+
+glm::mat4 GameObject2DCollisionBox::getTransform() {
+    glm::mat4 transform = owner->transform;
+    transform = glm::translate(transform, getAbsoluteOffset());
+    transform = glm::scale(transform, relativeScale);
+
+    transform = glm::mat4(1.f);
+    transform = glm::translate(transform, glm::vec3(getAbsolutePos()));
+    transform = glm::scale(transform, getAbsoluteScale());
+    return transform;
+
 }
 
 }

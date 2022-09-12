@@ -9,6 +9,7 @@
 #include <stdexcept>
 
 #include "camera2D.hpp"
+#include "camera3D.hpp"
 #include "gameObject2DSprite.hpp"
 #include "gameObject2DAnimatedSprite.hpp"
 #include "gameObject2DCollisionBox.hpp"
@@ -27,9 +28,9 @@ namespace dojo {
             void clear();
             bool isAlive();
             void setKill();
-            void render2D(Camera2D *c, GameObject2DSprite *s);
-            void render2D(Camera2D *c, GameObject2DAnimatedSprite *s);
-            void render2D(Camera2D *c, GameObject2DCollisionBox *b);
+            void render(Camera3D *c, GameObject2DSprite *s);
+            void render(Camera3D *c, GameObject2DAnimatedSprite *s);
+            void render(Camera3D *c, GameObject2DCollisionBox *b);
 
         private:
             GLFWwindow* window;

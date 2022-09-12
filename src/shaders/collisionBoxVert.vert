@@ -3,28 +3,15 @@
 layout(location=0) in vec3 aPos;
 
 //uniform int flip;
-uniform vec3 worldPos;
-uniform vec3 objectScale;
+uniform mat4 objectTransform;
 
-uniform vec3 cameraPos;
-uniform vec3 cameraScale;
+uniform mat4 viewTransform;
 
-uniform vec3 offset;
-uniform vec3 scale;
+uniform mat4 projection;
 
 void main () {
-    vec3 renderPos;
-    vec3 cameraTransform;
-    
-    cameraTransform.x = 1 / cameraScale.x;
-    cameraTransform.y = 1 / cameraScale.y;
-    cameraTransform.z = cameraScale.z;
 
-    //renderPos = (scale * objectScale * aPos) + worldPos + (offset * objectScale);
-    renderPos = (objectScale * aPos) + worldPos;
-    renderPos = (renderPos * cameraTransform) - cameraPos;
-    renderPos = renderPos * 2;
-    renderPos = renderPos - 1.0;
+    vec4 renderPos = projection * viewTransform * objectTransform * vec4(aPos, 1.0);
 
-    gl_Position = vec4(renderPos, 1.0);
+    gl_Position = renderPos;
 }

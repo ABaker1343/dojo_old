@@ -6,27 +6,19 @@ layout(location=1) in vec2 inTexPos;
 out vec2 texPos;
 
 uniform int flip;
-uniform vec3 worldPos;
-uniform vec3 objectScale;
+uniform mat4 objectTransform;
 
-uniform vec3 cameraPos;
-uniform vec3 cameraScale;
+uniform mat4 viewTransform;
+
+uniform mat4 projection;
 
 uniform int animationFrame;
 uniform float animationChunkSize;
 
 void main () {
-    vec3 renderPos;
-    vec3 cameraTransform;
-    
-    cameraTransform.x = 1 / cameraScale.x;
-    cameraTransform.y = 1 / cameraScale.y;
-    cameraTransform.z = cameraScale.z;
 
-    renderPos = (objectScale * aPos) + worldPos;
-    renderPos = (renderPos * cameraTransform) - cameraPos;
-    renderPos = renderPos * 2;
-    renderPos = renderPos - 1.0;
+
+    vec4 renderPos = projection * viewTransform * objectTransform * vec4(aPos, 1.0);
 
     texPos.x = inTexPos.x + (animationFrame * animationChunkSize);
     texPos.y = inTexPos.y;
@@ -36,5 +28,5 @@ void main () {
         texPos.y = texPos.y;
     }
 
-    gl_Position = vec4(renderPos, 1.0);
+    gl_Position = renderPos;
 }

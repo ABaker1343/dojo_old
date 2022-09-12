@@ -1,5 +1,7 @@
 #include "headers/window.hpp"
 #include "headers/renderable.hpp"
+#include <glm/ext/quaternion_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace dojo {
 
@@ -23,9 +25,10 @@ Window::Window(int width, int height, const char* name) {
         throw std::runtime_error("failed to load opengl functions");
     }
 
-    // allow color blending
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEPTH_TEST);
+    // allow color blending
 
     glViewport(0, 0, width, height);
     
@@ -76,7 +79,7 @@ void Window::clear() {
     glfwPollEvents();
 }
 
-void Window::render2D(Camera2D *c, GameObject2DSprite *s) {
+void Window::render(Camera3D *c, GameObject2DSprite *s) {
     glUseProgram(s->shaderProgram);
     glBindVertexArray(s->vertexArrayObject);
 
@@ -85,28 +88,25 @@ void Window::render2D(Camera2D *c, GameObject2DSprite *s) {
     int flipUniformPos = glGetUniformLocation(s->shaderProgram, "flip");
     glUniform1i(flipUniformPos, s->flip);
 
-    int worldPosUniformLocation = glGetUniformLocation(s->shaderProgram, "worldPos");
-    glUniform3fv(worldPosUniformLocation, 1, glm::value_ptr(s->pos));
+    int objectTransformLocation = glGetUniformLocation(s->shaderProgram, "objectTransform");
+    int viewTransformLocation = glGetUniformLocation(s->shaderProgram, "viewTransform");
+    int projectionTransformLocation = glGetUniformLocation(s->shaderProgram, "projection");
 
-    int scaleUniformLocation = glGetUniformLocation(s->shaderProgram, "objectScale");
-    glUniform3fv(scaleUniformLocation, 1, glm::value_ptr(s->scale));
-
-    int cameraPosUniformLocation = glGetUniformLocation(s->shaderProgram, "cameraPos");
-    glUniform3fv(cameraPosUniformLocation, 1, glm::value_ptr(c->pos));
-
-    int cameraScaleUniformLocation = glGetUniformLocation(s->shaderProgram, "cameraScale");
-    glUniform3fv(cameraScaleUniformLocation, 1, glm::value_ptr(c->scale));
+    glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(s->transform));
+    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
+    glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
 
     int animationFrameUniformLocation = glGetUniformLocation(s->shaderProgram, "animationFrame");
     glUniform1i(animationFrameUniformLocation, 0);
 
     int animationChunkSizeUniformLocation = glGetUniformLocation(s->shaderProgram, "animationChunkSize");
-    glUniform1i(animationChunkSizeUniformLocation, 1.0f);
+    glUniform1f(animationChunkSizeUniformLocation, 1.f);
 
     glDrawElements(GL_TRIANGLES, s->numElements(), GL_UNSIGNED_INT, 0);
+
 }
 
-void Window::render2D(Camera2D *c, GameObject2DAnimatedSprite *s) {
+void Window::render(Camera3D *c, GameObject2DAnimatedSprite *s) {
     glUseProgram(s->shaderProgram);
     glBindVertexArray(s->vertexArrayObject);
 
@@ -115,17 +115,13 @@ void Window::render2D(Camera2D *c, GameObject2DAnimatedSprite *s) {
     int flipUniformPos = glGetUniformLocation(s->shaderProgram, "flip");
     glUniform1i(flipUniformPos, s->flip);
 
-    int worldPosUniformLocation = glGetUniformLocation(s->shaderProgram, "worldPos");
-    glUniform3fv(worldPosUniformLocation, 1, glm::value_ptr(s->pos));
+    int objectTransformLocation = glGetUniformLocation(s->shaderProgram, "objectTransform");
+    int viewTransformLocation = glGetUniformLocation(s->shaderProgram, "viewTransform");
+    int projectionTransformLocation = glGetUniformLocation(s->shaderProgram, "projection");
 
-    int scaleUniformLocation = glGetUniformLocation(s->shaderProgram, "objectScale");
-    glUniform3fv(scaleUniformLocation, 1, glm::value_ptr(s->scale));
-
-    int cameraPosUniformLocation = glGetUniformLocation(s->shaderProgram, "cameraPos");
-    glUniform3fv(cameraPosUniformLocation, 1, glm::value_ptr(c->pos));
-
-    int cameraScaleUniformLocation = glGetUniformLocation(s->shaderProgram, "cameraScale");
-    glUniform3fv(cameraScaleUniformLocation, 1, glm::value_ptr(c->scale));
+    glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(s->transform));
+    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
+    glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
 
     int animationFrameUniformLocation = glGetUniformLocation(s->shaderProgram, "animationFrame");
     glUniform1i(animationFrameUniformLocation, s->currentFrame());
@@ -136,27 +132,18 @@ void Window::render2D(Camera2D *c, GameObject2DAnimatedSprite *s) {
     glDrawElements(GL_TRIANGLES, s->numElements(), GL_UNSIGNED_INT, 0);
 }
 
-void Window::render2D(Camera2D *c, GameObject2DCollisionBox *b) {
+void Window::render(Camera3D *c, GameObject2DCollisionBox *b) {
+
     glUseProgram(collisionBox2DShaderProgram);
     glBindVertexArray(collisionBoxVertexArray);
-    
-    int worldPosUniformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "worldPos");
-    glUniform3fv(worldPosUniformLocation, 1, glm::value_ptr(b->getAbsolutePos()));
 
-    int scaleUniformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "objectScale");
-    glUniform3fv(scaleUniformLocation, 1, glm::value_ptr(b->getAbsoluteScale()));
+    int objectTransformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "objectTransform");
+    int viewTransformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "viewTransform");
+    int projectionTransformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "projection");
 
-    int cameraPosUniformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "cameraPos");
-    glUniform3fv(cameraPosUniformLocation, 1, glm::value_ptr(c->pos));
-
-    int cameraScaleUniformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "cameraScale");
-    glUniform3fv(cameraScaleUniformLocation, 1, glm::value_ptr(c->scale));
-
-    //int offsetLocation = glGetUniformLocation(collisionBox2DShaderProgram, "offset");
-    //int scaleLocation = glGetUniformLocation(collisionBox2DShaderProgram, "scale");
-
-    //glUniform3fv(offsetLocation, 1, glm::value_ptr(b->relativeOffset));
-    //glUniform3fv(scaleLocation, 1, glm::value_ptr(b->relativeScale));
+    glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(b->getTransform()));
+    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
+    glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
 
     glDrawElements(GL_TRIANGLES, boxElements->size(), GL_UNSIGNED_INT, 0);
 }
@@ -189,6 +176,8 @@ void Window::createCollisionBoxRenderDependancies() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0 );
     glEnableVertexAttribArray(0);
     
+    glBindVertexArray(0);
+
     // create shaders
 
     collisionBox2DShaderProgram = Renderable::createBasicShaderProgram("src/shaders/collisionBoxVert.vert", "src/shaders/collisionBoxFrag.frag");

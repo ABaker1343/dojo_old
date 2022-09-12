@@ -2,6 +2,7 @@
 #define __HEADER_GAME_OBJECT
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace dojo {
     class GameObject {
@@ -10,8 +11,15 @@ namespace dojo {
             ~GameObject();
 
             int flip;
-            glm::vec3 pos;
-            glm::vec3 scale;
+            glm::mat4 transform;
+            //glm::vec3 pos;
+            //glm::vec3 scale;
+            
+            void setPos(float x, float y, float z=0.f);
+            glm::vec3 getPos();
+
+            void setScale(float x, float y, float z=0);
+            glm::vec3 getScale();
 
         private:
 
