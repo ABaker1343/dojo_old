@@ -1,5 +1,5 @@
 #include "headers/window.hpp"
-#include "headers/gameObject3DCube.hpp"
+#include "headers/gameObject3DTextured.hpp"
 #include "headers/renderable.hpp"
 #include <glm/ext/quaternion_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -134,34 +134,7 @@ void Window::render(Camera3D *c, GameObject2DAnimatedSprite *s) {
     glDrawElements(GL_TRIANGLES, s->numElements(), GL_UNSIGNED_INT, 0);
 }
 
-void Window::render(Camera3D *c, GameObject3DCube *cube) {
-    glUseProgram(cube->shaderProgram);
-    glBindVertexArray(cube->vertexArrayObject);
-
-    glBindTexture(GL_TEXTURE_2D, cube->texture);
-
-    int flipUniformPos = glGetUniformLocation(cube->shaderProgram, "flip");
-    glUniform1i(flipUniformPos, cube->flip);
-
-    int objectTransformLocation = glGetUniformLocation(cube->shaderProgram, "objectTransform");
-    int viewTransformLocation = glGetUniformLocation(cube->shaderProgram, "viewTransform");
-    int projectionTransformLocation = glGetUniformLocation(cube->shaderProgram, "projection");
-
-    glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(cube->transform));
-    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
-    glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
-
-    int animationFrameUniformLocation = glGetUniformLocation(cube->shaderProgram, "animationFrame");
-    glUniform1i(animationFrameUniformLocation, 0);
-
-    int animationChunkSizeUniformLocation = glGetUniformLocation(cube->shaderProgram, "animationChunkSize");
-    glUniform1f(animationChunkSizeUniformLocation, 1.f);
-
-    glDrawElements(GL_TRIANGLES, cube->numElements(), GL_UNSIGNED_INT, 0);
-
-}
-
-void Window::render(Camera3D *c, GameObject3DGenericTexturedObject *obj) {
+void Window::render(Camera3D *c, GameObject3DTextured *obj) {
     glUseProgram(obj->shaderProgram);
     glBindVertexArray(obj->vertexArrayObject);
 

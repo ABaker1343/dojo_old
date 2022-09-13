@@ -1,16 +1,16 @@
 #include "src/headers/camera3D.hpp"
 #include "src/headers/dojo.hpp"
 #include "src/headers/gameObject3DCube.hpp"
-#include "src/headers/gameObjectGenericTextuedObject.hpp"
+#include "src/headers/gameObject3DTextured.hpp"
 #include "src/headers/window.hpp"
 
-void handleInputs(dojo::Window*, dojo::Camera3D*, dojo::GameObject3DCube*);
+void handleInputs(dojo::Window*, dojo::Camera3D*, dojo::GameObject3DTextured*);
 
 int main () {
     auto *window = new dojo::Window(100, 100, "new Window");
     auto *camera = new dojo::Camera3D();
-    auto *cube = new dojo::GameObject3DCube("texture.png");
-    auto *otherObj = new dojo::GameObject3DGenericTexturedObject("monkey.obj", "texture.png",
+    auto *cube = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "texture.png");
+    auto *otherObj = new dojo::GameObject3DTextured("monkey.obj", "texture.png",
             glm::vec3(3.f,3.f,0.f), glm::vec3(10.f, 10.f, 10.f));
 
     while (window->isAlive()) {
@@ -28,7 +28,7 @@ int main () {
     delete otherObj;
 }
 
-void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObject3DCube* cube) {
+void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObject3DTextured* cube) {
     if (win->KEYS[GLFW_KEY_S]) {
         //cube->move(0,0,-0.5f);
         cube->move(
