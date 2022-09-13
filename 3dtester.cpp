@@ -1,6 +1,7 @@
 #include "src/headers/camera3D.hpp"
 #include "src/headers/dojo.hpp"
 #include "src/headers/gameObject3DCube.hpp"
+#include "src/headers/gameObjectGenericTextuedObject.hpp"
 #include "src/headers/window.hpp"
 
 void handleInputs(dojo::Window*, dojo::Camera3D*, dojo::GameObject3DCube*);
@@ -9,6 +10,8 @@ int main () {
     auto *window = new dojo::Window(100, 100, "new Window");
     auto *camera = new dojo::Camera3D();
     auto *cube = new dojo::GameObject3DCube("texture.png");
+    auto *otherObj = new dojo::GameObject3DGenericTexturedObject("monkey.obj", "texture.png",
+            glm::vec3(3.f,3.f,0.f), glm::vec3(10.f, 10.f, 10.f));
 
     while (window->isAlive()) {
         window->clear();
@@ -16,11 +19,13 @@ int main () {
         cube->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
         handleInputs(window, camera, cube);
         window->render(camera, cube);
+        window->render(camera, otherObj);
     }
 
     delete window;
     delete camera;
     delete cube;
+    delete otherObj;
 }
 
 void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObject3DCube* cube) {

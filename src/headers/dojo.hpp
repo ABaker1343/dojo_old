@@ -6,3 +6,4 @@
 #include "gameObject2DCollisionBox.hpp"
 #include "camera2D.hpp"
 #include "gameObject3DCube.hpp"
+#include "gameObject3DGenericTexturedObject.hpp"

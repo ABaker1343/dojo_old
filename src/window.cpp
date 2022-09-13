@@ -161,6 +161,33 @@ void Window::render(Camera3D *c, GameObject3DCube *cube) {
 
 }
 
+void Window::render(Camera3D *c, GameObject3DGenericTexturedObject *obj) {
+    glUseProgram(obj->shaderProgram);
+    glBindVertexArray(obj->vertexArrayObject);
+
+    glBindTexture(GL_TEXTURE_2D, obj->texture);
+
+    int flipUniformPos = glGetUniformLocation(obj->shaderProgram, "flip");
+    glUniform1i(flipUniformPos, obj->flip);
+
+    int objectTransformLocation = glGetUniformLocation(obj->shaderProgram, "objectTransform");
+    int viewTransformLocation = glGetUniformLocation(obj->shaderProgram, "viewTransform");
+    int projectionTransformLocation = glGetUniformLocation(obj->shaderProgram, "projection");
+
+    glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(obj->transform));
+    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
+    glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
+
+    int animationFrameUniformLocation = glGetUniformLocation(obj->shaderProgram, "animationFrame");
+    glUniform1i(animationFrameUniformLocation, 0);
+
+    int animationChunkSizeUniformLocation = glGetUniformLocation(obj->shaderProgram, "animationChunkSize");
+    glUniform1f(animationChunkSizeUniformLocation, 1.f);
+
+    glDrawElements(GL_TRIANGLES, obj->numElements(), GL_UNSIGNED_INT, 0);
+
+}
+
 void Window::render(Camera3D *c, GameObject2DCollisionBox *b) {
 
     glUseProgram(collisionBox2DShaderProgram);

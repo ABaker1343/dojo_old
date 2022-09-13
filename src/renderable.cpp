@@ -28,6 +28,33 @@ void Renderable::createTexturedObjectBuffers(unsigned int &vertexArrayObject, un
     
 }
 
+void Renderable::createTexturedObjectBuffersWithOffsetTextures(unsigned int &vertexArrayObject, unsigned int &vertexBuffer, unsigned int &elementBuffer,
+        std::vector<float> *vertices, unsigned int textureOffset, std::vector<unsigned int> *elements) {
+    // this will make the same buffsers as createTexturedObjectBuffers
+    // but you are expected to have texture coords appended to the end of the vertices
+    // instead of alongside them
+    
+    // create buffers and buffer the data
+    glGenVertexArrays(1, &vertexArrayObject);
+    glBindVertexArray(vertexArrayObject);
+
+    glGenBuffers(1, &vertexBuffer);
+    glGenBuffers(1, &elementBuffer);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices->size(), vertices->data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * elements->size(), elements->data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)(sizeof(float) * textureOffset));
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+}
+
 unsigned int Renderable::createBasicShaderProgram(std::string vertexShaderPath, std::string fragmentShaderPath){
     std::string vertShaderCode = fileHandler::readShader(vertexShaderPath);
     std::string fragShaderCode = fileHandler::readShader(fragmentShaderPath);

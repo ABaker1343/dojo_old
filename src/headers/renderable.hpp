@@ -22,6 +22,8 @@ class Renderable {
 
         static void createTexturedObjectBuffers(unsigned int &vertexArrayObject, unsigned int &vertexBuffer, unsigned int &elementBuffer,
                 std::vector<float> *vertices, std::vector<unsigned int> *elements);
+        static void createTexturedObjectBuffersWithOffsetTextures(unsigned int &vertexArrayObject, unsigned int &vertexBuffer, unsigned int &elementBuffer,
+                std::vector<float> *vertices, unsigned int textureOffset, std::vector<unsigned int> *elements);
 
         static unsigned int createVertexBuffer(std::vector<float> *vertices);
 
