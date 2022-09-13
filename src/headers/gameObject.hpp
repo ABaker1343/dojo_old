@@ -15,11 +15,13 @@ namespace dojo {
             //glm::vec3 pos;
             //glm::vec3 scale;
             
-            void setPos(float x, float y, float z=0.f);
+            void move(float x, float y, float z=0.f);
             glm::vec3 getPos();
 
-            void setScale(float x, float y, float z=0);
+            void scale(float x, float y, float z=0);
             glm::vec3 getScale();
+
+            void rotate(float degrees, glm::vec3 axis);
 
         private:
 

@@ -20,10 +20,13 @@ class Renderable {
 
         int numElements();
 
-        static void create2DBuffers(unsigned int &vertexArrayObject, unsigned int &vertexBuffer, unsigned int &elementBuffer,
+        static void createTexturedObjectBuffers(unsigned int &vertexArrayObject, unsigned int &vertexBuffer, unsigned int &elementBuffer,
                 std::vector<float> *vertices, std::vector<unsigned int> *elements);
+
         static unsigned int createVertexBuffer(std::vector<float> *vertices);
+
         static unsigned int createBasicShaderProgram(std::string vertexShaderPath, std::string fragmentShaderPath);
+
         static unsigned int loadTextureFromFile(const char* filepath);
 
     protected:

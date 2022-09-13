@@ -3,7 +3,7 @@
 
 namespace dojo {
 
-void Renderable::create2DBuffers(unsigned int &vertexArrayObject, unsigned int &vertexBuffer, unsigned int &elementBuffer,
+void Renderable::createTexturedObjectBuffers(unsigned int &vertexArrayObject, unsigned int &vertexBuffer, unsigned int &elementBuffer,
         std::vector<float> *vertices, std::vector<unsigned int> *elements) {
     
     // create buffers and buffer the data
@@ -23,6 +23,8 @@ void Renderable::create2DBuffers(unsigned int &vertexArrayObject, unsigned int &
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float) * 3));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
     
 }
 

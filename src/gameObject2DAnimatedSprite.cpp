@@ -27,7 +27,7 @@ GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(int numFrames, std::strin
         2, 3, 0,
     };
 
-    Renderable::create2DBuffers(vertexArrayObject, baseAnimation.vertexBuffer, elementBuffer,
+    Renderable::createTexturedObjectBuffers(vertexArrayObject, baseAnimation.vertexBuffer, elementBuffer,
             vertices, elements);
     shaderProgram = Renderable::createBasicShaderProgram("src/shaders/basicVert.vert", "src/shaders/basicFrag.frag");
     baseAnimation.texture = Renderable::loadTextureFromFile(animationPath.c_str());
@@ -36,6 +36,7 @@ GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(int numFrames, std::strin
     currentAnimation = &(*animations)["default"];
 
     flip = 0;
+    isCopy = false;
 
 }
 
@@ -49,12 +50,16 @@ GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(GameObject2DAnimatedSprit
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, (*animations)["default"].vertexBuffer);
     flip = obj->flip;
+
+    isCopy = true;
 }
 
 GameObject2DAnimatedSprite::~GameObject2DAnimatedSprite() {
-    delete vertices;
-    delete elements;
-    delete animations;
+    if (!isCopy) {
+        delete vertices;
+        delete elements;
+        delete animations;
+    }
         
 }
 

@@ -39,6 +39,8 @@ class GameObject2DAnimatedSprite : public GameObject, public Renderable {
     private:
         std::unordered_map<std::string, ANIMATION> *animations;
         ANIMATION *currentAnimation;
+
+        bool isCopy;
 };
 
 }

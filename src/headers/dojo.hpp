@@ -5,3 +5,4 @@
 #include "gameObject2DAnimatedSprite.hpp"
 #include "gameObject2DCollisionBox.hpp"
 #include "camera2D.hpp"
+#include "gameObject3DCube.hpp"

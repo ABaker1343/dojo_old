@@ -138,4 +138,8 @@ glm::mat4 GameObject2DCollisionBox::getTransform() {
 
 }
 
+void GameObject2DCollisionBox::attachCollisionCallback(GameObject2DCollisionBox *box, void *func) {
+    callbackColliders->insert({box, func});
+}
+
 }

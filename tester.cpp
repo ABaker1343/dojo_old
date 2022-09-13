@@ -43,22 +43,21 @@ int main () {
 
     std::vector<dojo::GameObject2DSprite*> *objects = new std::vector<dojo::GameObject2DSprite*>;
     std::vector<dojo::GameObject2DCollisionBox*> *colliders = new std::vector<dojo::GameObject2DCollisionBox*>;
-    
+
     dojo::GameObject2DSprite *initialSprite = new dojo::GameObject2DSprite("texture.png");
-    initialSprite->setPos(
+    initialSprite->move(
             (rand() % 30) - 15,
             (rand() % 30) - 15
             );
-    initialSprite->setScale(2, 2);
+    initialSprite->scale(2, 2);
     dojo::GameObject2DCollisionBox *initialCollider = new dojo::GameObject2DCollisionBox(initialSprite);
     objects->push_back(initialSprite);
     colliders->push_back(initialCollider);
 
-
     for (int i = 0; i < 10; i++) {
         dojo::GameObject2DSprite *newObj = new dojo::GameObject2DSprite(initialSprite);
-        newObj->setScale(2,2);
-    newObj->setPos(
+        newObj->scale(2,2);
+    newObj->move(
             (rand() % 30) - 15,
             (rand() % 30) - 15
             );
@@ -82,14 +81,17 @@ int main () {
 
         handleInputs(&hinputs);
         window->clear();
+
+        window->render(c, player);
         window->render(c, playerCollider);
-        for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = colliders->begin(); it != colliders->end(); it++) {
-            window->render(c, *it);
-        }
+
         for (std::vector<dojo::GameObject2DSprite*>::iterator it = objects->begin(); it != objects->end(); it++){
             window->render(c, *it);
         }
-        window->render(c, player);
+        for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = colliders->begin(); it != colliders->end(); it++) {
+            window->render(c, *it);
+        }
+
         if (!player->nextFrame()) {
             if (player->currentAnimationName() == "default") {
                 player->setCurrentAnimation("walking");
@@ -136,7 +138,8 @@ void handleInputs(HANDLER_INPUT *hinput) {
         }
         if (!colliding) {
             //hinput->sprite->pos.x --;
-            hinput->sprite->setPos(
+            //hinput->sprite->move(-1, 0);
+            hinput->sprite->move(
                     hinput->sprite->getPos().x - 1,
                     hinput->sprite->getPos().y
                     );
@@ -152,7 +155,8 @@ void handleInputs(HANDLER_INPUT *hinput) {
             }
         }
         if (!colliding) {
-            hinput->sprite->setPos(
+            //hinput->sprite->move(1, -0);
+            hinput->sprite->move(
                     hinput->sprite->getPos().x + 1,
                     hinput->sprite->getPos().y
                     );
@@ -168,7 +172,8 @@ void handleInputs(HANDLER_INPUT *hinput) {
             }
         }
         if (!colliding) {
-            hinput->sprite->setPos(
+            //hinput->sprite->move(0, 1);
+            hinput->sprite->move(
                     hinput->sprite->getPos().x,
                     hinput->sprite->getPos().y + 1
                     );
@@ -184,7 +189,8 @@ void handleInputs(HANDLER_INPUT *hinput) {
             }
         }
         if (!colliding) {
-            hinput->sprite->setPos(
+            //hinput->sprite->move(0, -1);
+            hinput->sprite->move(
                     hinput->sprite->getPos().x,
                     hinput->sprite->getPos().y - 1
                     );
@@ -197,9 +203,9 @@ void handleInputs(HANDLER_INPUT *hinput) {
         hinput->window->setKill();
     }
 
-    std::cout 
+    /*std::cout 
         << hinput->sprite->getPos().x << " "
         << hinput->sprite->getPos().y << " "
         << hinput->sprite->getPos().z << " "
-    << std::endl;
+    << std::endl;*/
 }

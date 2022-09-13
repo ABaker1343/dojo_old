@@ -18,6 +18,7 @@ class GameObject2DSprite : public GameObject, public Renderable {
         unsigned int texture;
 
     private:
+        bool isCopy;
 
 };
 
