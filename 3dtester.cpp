@@ -1,9 +1,10 @@
 #include "src/headers/camera3D.hpp"
 #include "src/headers/dojo.hpp"
 #include "src/headers/gameObject3DTextured.hpp"
+#include "src/headers/gameObjectLightSource.hpp"
 #include "src/headers/window.hpp"
 
-void handleInputs(dojo::Window*, dojo::Camera3D*, dojo::GameObject3DTextured*);
+void handleInputs(dojo::Window*, dojo::Camera3D*, dojo::GameObject*);
 
 int main () {
     auto *window = new dojo::Window(100, 100, "new Window");
@@ -12,10 +13,12 @@ int main () {
     auto *otherObj = new dojo::GameObject3DTextured("monkey.obj", "texture.png",
             glm::vec3(3.f,3.f,0.f));
 
+    auto *lightSource = new dojo::GameObjectLightSource(glm::vec3(0.8f, 0.3f, 0.2f));
+
     std::vector<dojo::GameObject3DTextured*> *objects = new std::vector<dojo::GameObject3DTextured*>();
     objects->push_back(otherObj);
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = -10; i < 10; i+= 2) {
         auto newObj = new dojo::GameObject3DTextured(otherObj, glm::vec3(i*2, 0.f, 0.f));
         objects->push_back(newObj);
     }
@@ -24,11 +27,12 @@ int main () {
         window->clear();
         //rotate the cube
         cube->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
-        handleInputs(window, camera, cube);
-        window->render(camera, cube);
+        handleInputs(window, camera, lightSource);
+        window->render(camera, cube, lightSource);
+        window->render(camera, lightSource);
         for (auto obj : *objects) {
             obj->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
-            window->render(camera, obj);
+            window->render(camera, obj, lightSource);
         }
     }
 
@@ -42,7 +46,7 @@ int main () {
     delete objects;
 }
 
-void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObject3DTextured* cube) {
+void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObject* cube) {
     if (win->KEYS[GLFW_KEY_S]) {
         //cube->move(0,0,-0.5f);
         cube->move(
@@ -72,6 +76,22 @@ void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObject3DText
         cube->move(
                 cube->getPos().x + -0.5f,
                 cube->getPos().y,
+                cube->getPos().z
+                );
+    }
+    if (win->KEYS[GLFW_KEY_R]) {
+        //cube->move(-0.5f, 0, 0);
+        cube->move(
+                cube->getPos().x,
+                cube->getPos().y + 0.5f,
+                cube->getPos().z
+                );
+    }
+    if (win->KEYS[GLFW_KEY_T]) {
+        //cube->move(-0.5f, 0, 0);
+        cube->move(
+                cube->getPos().x,
+                cube->getPos().y - 0.5f,
                 cube->getPos().z
                 );
     }
@@ -111,7 +131,7 @@ void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObject3DText
                 cam->getPos().z - 1
                 );
     }
-    if (win->KEYS[GLFW_KEY_DOWN]) {
+    if (win->KEYS[GLFW_KEY_M]) {
         cam->move(
                 cam->getPos().x,
                 cam->getPos().y,

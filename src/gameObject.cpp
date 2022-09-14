@@ -47,6 +47,10 @@ glm::vec3 GameObject::getScale() {
     return scale;
 }
 
+glm::mat4 GameObject::getTransform() {
+    return transform;
+}
+
 void GameObject::rotate(float degrees, glm::vec3 axis) {
     transform = glm::rotate(transform, glm::radians(degrees), axis);
 }

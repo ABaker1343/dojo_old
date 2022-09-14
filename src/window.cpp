@@ -135,7 +135,7 @@ void Window::render(Camera3D *c, GameObject2DAnimatedSprite *s) {
     glDrawElements(GL_TRIANGLES, s->numElements(), GL_UNSIGNED_INT, 0);
 }
 
-void Window::render(Camera3D *c, GameObject3DTextured *obj) {
+void Window::render(Camera3D *c, GameObject3DTextured *obj, GameObjectLightSource *light) {
     glUseProgram(obj->shaderProgram);
     glBindVertexArray(obj->vertexArrayObject);
 
@@ -161,8 +161,8 @@ void Window::render(Camera3D *c, GameObject3DTextured *obj) {
     glUniform1i(animationFrameUniformLocation, 0);
     glUniform1f(animationChunkSizeUniformLocation, 1.f);
 
-    glUniform3fv(lightColorLocation, 1, glm::value_ptr(colliderColor));
-    glUniform3fv(lightPosLocation, 1, glm::value_ptr(glm::vec3(10.f, 10.f, 0.f)));
+    glUniform3fv(lightColorLocation, 1, glm::value_ptr(light->lightColor));
+    glUniform3fv(lightPosLocation, 1, glm::value_ptr(light->getPos()));
 
     //glDrawElements(GL_TRIANGLES, obj->numElements(), GL_UNSIGNED_INT, 0);
     glDrawArrays(GL_TRIANGLES, 0, obj->numVertices());
@@ -185,6 +185,25 @@ void Window::render(Camera3D *c, GameObject2DCollisionBox *b) {
     glUniform4fv(colorUniformLocation, 1, glm::value_ptr(colliderColor));
 
     glDrawElements(GL_TRIANGLES, boxElements->size(), GL_UNSIGNED_INT, 0);
+}
+
+void Window::render(Camera3D *c, GameObjectLightSource *light) {
+
+    glUseProgram(collisionBoxShaderProgram);
+    glBindVertexArray(collisionBoxVertexArray);
+
+    int objectTransformLocation = glGetUniformLocation(collisionBoxShaderProgram, "objectTransform");
+    int viewTransformLocation = glGetUniformLocation(collisionBoxShaderProgram, "viewTransform");
+    int projectionTransformLocation = glGetUniformLocation(collisionBoxShaderProgram, "projection");
+    int colorUniformLocation = glGetUniformLocation(collisionBoxShaderProgram, "inColor");
+
+    glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(light->getTransform()));
+    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
+    glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
+    glUniform4fv(colorUniformLocation, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.0f)));
+
+    glDrawElements(GL_TRIANGLES, boxElements->size(), GL_UNSIGNED_INT, 0);
+    
 }
 
 void Window::createCollisionBoxRenderDependancies() {
