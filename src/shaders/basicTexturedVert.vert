@@ -32,7 +32,6 @@ void main () {
 
     fragPos = vec3(objectTransform * vec4(aPos, 1.0));
 
-    normal = (objectTransform * vec4(aNormal, 1.0)).xyz;
-    normal = normalize(normal);
+    normal = mat3(transpose(inverse(objectTransform))) * aNormal;
     //normal = aNormal;
 }

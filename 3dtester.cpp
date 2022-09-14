@@ -28,10 +28,10 @@ int main () {
         //rotate the cube
         cube->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
         handleInputs(window, camera, lightSource);
-        window->render(camera, cube, lightSource);
+        //window->render(camera, cube, lightSource);
         window->render(camera, lightSource);
         for (auto obj : *objects) {
-            obj->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
+            //obj->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
             window->render(camera, obj, lightSource);
         }
     }
@@ -98,14 +98,14 @@ void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObject* cube
 
     if (win->KEYS[GLFW_KEY_RIGHT]) {
         cam->move(
-                cam->getPos().x + 1,
+                cam->getPos().x + 0.1f,
                 cam->getPos().y,
                 cam->getPos().z
                 );
     }
     if (win->KEYS[GLFW_KEY_LEFT]) {
         cam->move(
-                cam->getPos().x - 1,
+                cam->getPos().x - 0.1,
                 cam->getPos().y,
                 cam->getPos().z
                 );
@@ -113,14 +113,14 @@ void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObject* cube
     if (win->KEYS[GLFW_KEY_UP]) {
         cam->move(
                 cam->getPos().x,
-                cam->getPos().y + 1,
+                cam->getPos().y + 0.1,
                 cam->getPos().z
                 );
     }
     if (win->KEYS[GLFW_KEY_DOWN]) {
         cam->move(
                 cam->getPos().x,
-                cam->getPos().y - 1,
+                cam->getPos().y - 0.1,
                 cam->getPos().z
                 );
     }
