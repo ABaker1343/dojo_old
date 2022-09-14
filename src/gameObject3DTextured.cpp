@@ -15,6 +15,7 @@ GameObject3DTextured::GameObject3DTextured(Shape shape, std::string texturePath,
     shaderProgram = createBasicShaderProgram("src/shaders/basicVert.vert", "src/shaders/basicFrag.frag");
     texture = loadTextureFromFile(texturePath.c_str());
 
+    this->isClone = false;
 }
 
 void GameObject3DTextured::createCubeVertices() {
@@ -68,14 +69,6 @@ GameObject3DTextured::GameObject3DTextured(std::string objectPath, std::string t
 
     unsigned int textureOffset = vertices->size();
 
-    for (float f : *vertices) {
-        std::cout << "vertex " << f << std::endl;
-    } std::cout << std::endl;
-
-    for (float f : *textureCoords) {
-        std::cout << "texture: "<< f << std::endl;
-    } std::cout << std::endl;
-
     vertices->insert(vertices->end(), textureCoords->begin(), textureCoords->end());
 
     Renderable::createTexturedObjectBuffersWithOffsetTextures(vertexArrayObject, vertexBuffer, elementBuffer,
@@ -86,15 +79,29 @@ GameObject3DTextured::GameObject3DTextured(std::string objectPath, std::string t
     
     delete textureCoords;
 
+    this->isClone = false;
+
+}
+
+GameObject3DTextured::GameObject3DTextured(GameObject3DTextured *obj, glm::vec3 pos, glm::vec3 scale) : GameObject(pos, scale) {
+    this->vertexArrayObject = obj->vertexArrayObject;
+    this->shaderProgram = obj->shaderProgram;
+    this->texture = obj->texture;
+    this->elements = obj->elements;
+    this->vertices = obj->vertices;
+
+    this->isClone = true;
 }
 
 GameObject3DTextured::~GameObject3DTextured() {
-    delete vertices;
-    delete elements;
-    glDeleteVertexArrays(1, &vertexArrayObject);
-    glDeleteBuffers(1, &vertexBuffer);
-    glDeleteBuffers(1, &elementBuffer);
-    glDeleteTextures(1, &texture);
+    if (!isClone){
+        delete vertices;
+        delete elements;
+        glDeleteVertexArrays(1, &vertexArrayObject);
+        glDeleteBuffers(1, &vertexBuffer);
+        glDeleteBuffers(1, &elementBuffer);
+        glDeleteTextures(1, &texture);
+    }
 }
 
 }

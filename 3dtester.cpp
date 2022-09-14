@@ -1,6 +1,5 @@
 #include "src/headers/camera3D.hpp"
 #include "src/headers/dojo.hpp"
-#include "src/headers/gameObject3DCube.hpp"
 #include "src/headers/gameObject3DTextured.hpp"
 #include "src/headers/window.hpp"
 
@@ -11,7 +10,15 @@ int main () {
     auto *camera = new dojo::Camera3D();
     auto *cube = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "texture.png");
     auto *otherObj = new dojo::GameObject3DTextured("monkey.obj", "texture.png",
-            glm::vec3(3.f,3.f,0.f), glm::vec3(10.f, 10.f, 10.f));
+            glm::vec3(3.f,3.f,0.f));
+
+    std::vector<dojo::GameObject3DTextured*> *objects = new std::vector<dojo::GameObject3DTextured*>();
+    objects->push_back(otherObj);
+
+    for (int i = 0; i < 10; i++) {
+        auto newObj = new dojo::GameObject3DTextured(otherObj, glm::vec3(i*2, 0.f, 0.f));
+        objects->push_back(newObj);
+    }
 
     while (window->isAlive()) {
         window->clear();
@@ -19,13 +26,20 @@ int main () {
         cube->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
         handleInputs(window, camera, cube);
         window->render(camera, cube);
-        window->render(camera, otherObj);
+        for (auto obj : *objects) {
+            obj->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
+            window->render(camera, obj);
+        }
     }
 
     delete window;
     delete camera;
     delete cube;
-    delete otherObj;
+    
+    for (auto obj : *objects){
+        delete obj;
+    }
+    delete objects;
 }
 
 void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObject3DTextured* cube) {
@@ -61,8 +75,41 @@ void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObject3DText
                 cube->getPos().z
                 );
     }
+
+    if (win->KEYS[GLFW_KEY_RIGHT]) {
+        cam->move(
+                cam->getPos().x + 1,
+                cam->getPos().y,
+                cam->getPos().z
+                );
+    }
+    if (win->KEYS[GLFW_KEY_LEFT]) {
+        cam->move(
+                cam->getPos().x - 1,
+                cam->getPos().y,
+                cam->getPos().z
+                );
+    }
+    if (win->KEYS[GLFW_KEY_UP]) {
+        cam->move(
+                cam->getPos().x,
+                cam->getPos().y + 1,
+                cam->getPos().z
+                );
+    }
+    if (win->KEYS[GLFW_KEY_DOWN]) {
+        cam->move(
+                cam->getPos().x,
+                cam->getPos().y - 1,
+                cam->getPos().z
+                );
+    }
+
     if (win->KEYS[GLFW_KEY_F]) {
         cube->scale(1.1, 1.1, 1.1);
+    }
+    if (win->KEYS[GLFW_KEY_G]) {
+        cube->scale(0.9, 0.9, 0.9);
     }
 
 }

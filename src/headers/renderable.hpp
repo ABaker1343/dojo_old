@@ -13,8 +13,6 @@ namespace dojo {
 class Renderable {
     public:
         unsigned int vertexArrayObject;
-        unsigned int vertexBuffer;
-        unsigned int elementBuffer;
 
         unsigned int shaderProgram;
 
@@ -32,6 +30,9 @@ class Renderable {
         static unsigned int loadTextureFromFile(const char* filepath);
 
     protected:
+        unsigned int vertexBuffer;
+        unsigned int elementBuffer;
+
         std::vector<float> *vertices;
         std::vector<unsigned int> *elements;
 };

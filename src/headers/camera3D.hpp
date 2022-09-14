@@ -16,6 +16,12 @@ class Camera3D : public GameObject {
         //glm::mat4 transform;
         glm::mat4 projection;
 
+        //glm::vec3 pos;
+        //glm::vec3 target;
+
+        void move(float x, float y, float z = 0.f);
+        glm::vec3 getPos();
+
     private:
 };
 

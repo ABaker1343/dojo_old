@@ -17,9 +17,15 @@ class GameObject3DTextured : public GameObject, public Renderable {
                 glm::vec3 pos = glm::vec3(0.f, 0.f, 0.f), glm::vec3 scale = glm::vec3(1.f, 1.f, 1.f));
         GameObject3DTextured(std::string objectPath, std::string texturePath,
                 glm::vec3 pos = glm::vec3(0.f, 0.f, 0.f), glm::vec3 scale = glm::vec3(1.f, 1.f, 1.f));
+        GameObject3DTextured(GameObject3DTextured* obj,
+                glm::vec3 pos = glm::vec3(0.f, 0.f, 0.f), glm::vec3 scale = glm::vec3(1.f, 1.f, 1.f));
+
         ~GameObject3DTextured();
 
         unsigned int texture;
+
+    protected:
+        bool isClone;
 
         void createCubeVertices();
 
