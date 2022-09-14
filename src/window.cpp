@@ -38,6 +38,7 @@ Window::Window(int width, int height, const char* name) {
     glfwSetKeyCallback(window, keyCallback);
     
     createCollisionBoxRenderDependancies();
+    colliderColor = glm::vec4(0.f, 1.f, 0.f, 0.2f);
 
 }
 
@@ -152,27 +153,36 @@ void Window::render(Camera3D *c, GameObject3DTextured *obj) {
     glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
 
     int animationFrameUniformLocation = glGetUniformLocation(obj->shaderProgram, "animationFrame");
-    glUniform1i(animationFrameUniformLocation, 0);
-
     int animationChunkSizeUniformLocation = glGetUniformLocation(obj->shaderProgram, "animationChunkSize");
+
+    int lightColorLocation = glGetUniformLocation(obj->shaderProgram, "lightColor");
+    int lightPosLocation = glGetUniformLocation(obj->shaderProgram, "lightPos");
+
+    glUniform1i(animationFrameUniformLocation, 0);
     glUniform1f(animationChunkSizeUniformLocation, 1.f);
 
-    glDrawElements(GL_TRIANGLES, obj->numElements(), GL_UNSIGNED_INT, 0);
+    glUniform3fv(lightColorLocation, 1, glm::value_ptr(colliderColor));
+    glUniform3fv(lightPosLocation, 1, glm::value_ptr(glm::vec3(10.f, 10.f, 0.f)));
+
+    //glDrawElements(GL_TRIANGLES, obj->numElements(), GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLES, 0, obj->numVertices());
 
 }
 
 void Window::render(Camera3D *c, GameObject2DCollisionBox *b) {
 
-    glUseProgram(collisionBox2DShaderProgram);
+    glUseProgram(collisionBoxShaderProgram);
     glBindVertexArray(collisionBoxVertexArray);
 
-    int objectTransformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "objectTransform");
-    int viewTransformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "viewTransform");
-    int projectionTransformLocation = glGetUniformLocation(collisionBox2DShaderProgram, "projection");
+    int objectTransformLocation = glGetUniformLocation(collisionBoxShaderProgram, "objectTransform");
+    int viewTransformLocation = glGetUniformLocation(collisionBoxShaderProgram, "viewTransform");
+    int projectionTransformLocation = glGetUniformLocation(collisionBoxShaderProgram, "projection");
+    int colorUniformLocation = glGetUniformLocation(collisionBoxShaderProgram, "inColor");
 
     glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(b->getTransform()));
     glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
     glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
+    glUniform4fv(colorUniformLocation, 1, glm::value_ptr(colliderColor));
 
     glDrawElements(GL_TRIANGLES, boxElements->size(), GL_UNSIGNED_INT, 0);
 }
@@ -209,7 +219,7 @@ void Window::createCollisionBoxRenderDependancies() {
 
     // create shaders
 
-    collisionBox2DShaderProgram = Renderable::createBasicShaderProgram("src/shaders/collisionBoxVert.vert", "src/shaders/collisionBoxFrag.frag");
+    collisionBoxShaderProgram = Renderable::createBasicShaderProgram("src/shaders/basicSolidColorVert.vert", "src/shaders/basicSolidColorFrag.frag");
 
 }
 

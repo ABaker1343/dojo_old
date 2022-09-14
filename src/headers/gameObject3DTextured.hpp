@@ -27,8 +27,7 @@ class GameObject3DTextured : public GameObject, public Renderable {
     protected:
         bool isClone;
 
-        void createCubeVertices();
-
+        void createCubeVertices(unsigned int &textureOffset, unsigned int &normalOffset);
 
 };
 

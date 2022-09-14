@@ -2,6 +2,7 @@
 
 layout(location=0) in vec3 aPos;
 layout(location=1) in vec2 inTexPos;
+layout(location=2) in vec3 aNormal;
 
 out vec2 texPos;
 
@@ -12,16 +13,15 @@ uniform mat4 viewTransform;
 
 uniform mat4 projection;
 
-uniform int animationFrame;
-uniform float animationChunkSize;
+out vec3 normal;
+out vec3 fragPos;
 
 void main () {
 
 
     vec4 renderPos = projection * viewTransform * objectTransform * vec4(aPos, 1.0);
 
-    texPos.x = inTexPos.x + (animationFrame * animationChunkSize);
-    texPos.y = inTexPos.y;
+    texPos = inTexPos;
 
     if (flip != 0) {
         texPos.x = texPos.x * -1;
@@ -29,4 +29,7 @@ void main () {
     }
 
     gl_Position = renderPos;
+
+    fragPos = vec3(objectTransform * vec4(aPos, 1.0));
+    normal = aNormal;
 }

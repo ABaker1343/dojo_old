@@ -29,7 +29,7 @@ void Renderable::createTexturedObjectBuffers(unsigned int &vertexArrayObject, un
 }
 
 void Renderable::createTexturedObjectBuffersWithOffsetTextures(unsigned int &vertexArrayObject, unsigned int &vertexBuffer, unsigned int &elementBuffer,
-        std::vector<float> *vertices, unsigned int textureOffset, std::vector<unsigned int> *elements) {
+        std::vector<float> *vertices, unsigned int textureOffset, unsigned int normalsOffset, std::vector<unsigned int> *elements) {
     // this will make the same buffsers as createTexturedObjectBuffers
     // but you are expected to have texture coords appended to the end of the vertices
     // instead of alongside them
@@ -49,8 +49,10 @@ void Renderable::createTexturedObjectBuffersWithOffsetTextures(unsigned int &ver
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)(sizeof(float) * textureOffset));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)(sizeof(float) * normalsOffset));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
 }
@@ -157,6 +159,10 @@ unsigned int Renderable::createVertexBuffer(std::vector<float> *vertices) {
 
 int Renderable::numElements() {
     return elements->size();
+}
+
+int Renderable::numVertices() {
+    return vertexCount;
 }
 
 }

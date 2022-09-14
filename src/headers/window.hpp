@@ -36,12 +36,13 @@ namespace dojo {
 
         private:
             GLFWwindow* window;
-            unsigned int collisionBox2DShaderProgram;
+            unsigned int collisionBoxShaderProgram;
             unsigned int collisionBoxVertexArray;
             unsigned int collisionBoxVertexBuffer;
             unsigned int boxElementBuffer;
             std::vector<float> *boxVertices;
             std::vector<unsigned int> *boxElements;
+            glm::vec4 colliderColor;
 
             void createCollisionBoxRenderDependancies();
             static void windowResizeCallback(GLFWwindow* window, int width, int height);

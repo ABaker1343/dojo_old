@@ -104,6 +104,20 @@ void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObject3DText
                 cam->getPos().z
                 );
     }
+    if (win->KEYS[GLFW_KEY_N]) {
+        cam->move(
+                cam->getPos().x,
+                cam->getPos().y,
+                cam->getPos().z - 1
+                );
+    }
+    if (win->KEYS[GLFW_KEY_DOWN]) {
+        cam->move(
+                cam->getPos().x,
+                cam->getPos().y,
+                cam->getPos().z + 1
+                );
+    }
 
     if (win->KEYS[GLFW_KEY_F]) {
         cube->scale(1.1, 1.1, 1.1);
