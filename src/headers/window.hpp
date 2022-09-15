@@ -31,6 +31,7 @@ namespace dojo {
             static bool KEYS[KEYS_SIZE];
 
             void clear();
+            void clearShadow();
             bool isAlive();
             void setKill();
 

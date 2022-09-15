@@ -22,6 +22,8 @@ class Camera3D : public GameObject {
         void move(float x, float y, float z = 0.f);
         glm::vec3 getPos();
 
+        glm::mat4 getProjectionTransform();
+
     private:
 };
 

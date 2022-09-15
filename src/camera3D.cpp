@@ -36,4 +36,8 @@ namespace dojo {
         return pos;
     }
 
+    glm::mat4 Camera3D::getProjectionTransform(){
+        return projection;
+    }
+
 }

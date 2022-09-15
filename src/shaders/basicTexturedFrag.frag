@@ -17,6 +17,20 @@ uniform vec3 lightColor;
 
 uniform int flip;
 
+float ShadowCalculation(vec4 fragPosLightSpace) {
+    // perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // get the depth between 0.0 and 1.0
+    projCoords = projCoords * 0.5 + 0.5;
+
+    float closestDepth = texture(inDepthMap, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+    
+    float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+
+    return shadow;
+}
+
 void main() {
 
     float ambientStrength = 0.15;
@@ -28,7 +42,10 @@ void main() {
     float diffuse = max(dot(normal, lightDir), 0.0);
     vec3 diffusionLight = diffuse * lightColor;
 
-    vec3 lighting = ambientLight + diffusionLight;
+    float shadow = ShadowCalculation(fs_in.fragPosLightSpace);
+
+    vec3 lighting = ambientLight + diffusionLight * (1 - shadow);
+    //vec3 lighting = (ambientLight + (1.0 - shadow) * diffuse);
 
     vec2 texturePos = fs_in.texPos;
 

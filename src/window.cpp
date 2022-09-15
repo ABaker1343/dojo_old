@@ -151,6 +151,7 @@ void Window::render(Camera3D *c, GameObject3DTextured *obj, GameObjectLightSourc
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, obj->texture);
+    //glBindTexture(GL_TEXTURE_2D, depthMap);
     int objectTextureLocation = glGetUniformLocation(obj->shaderProgram, "inTexture");
     glUniform1i(objectTextureLocation, 0);
 
@@ -167,8 +168,8 @@ void Window::render(Camera3D *c, GameObject3DTextured *obj, GameObjectLightSourc
     int projectionTransformLocation = glGetUniformLocation(obj->shaderProgram, "projection");
 
     glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(obj->transform));
-    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
-    glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
+    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->getTransform()));
+    glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->getProjectionTransform()));
 
     int animationFrameUniformLocation = glGetUniformLocation(obj->shaderProgram, "animationFrame");
     int animationChunkSizeUniformLocation = glGetUniformLocation(obj->shaderProgram, "animationChunkSize");
@@ -278,8 +279,10 @@ void Window::createShadowMapDependancies() {
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    float shadowBorderColor[] = {1.f, 1.f, 1.f, 1.f};
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, shadowBorderColor);
 
     // attach the texture to the framebuffers depth buffer
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFrameBuffer);
@@ -312,6 +315,12 @@ void Window::renderShadows(GameObject3DTextured *obj, GameObjectLightSource *lig
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+}
+
+void Window::clearShadow() {
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFrameBuffer);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 }
