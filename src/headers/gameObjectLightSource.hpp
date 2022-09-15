@@ -15,6 +15,12 @@ class GameObjectLightSource : public GameObject, public Renderable {
 
         glm::vec3 lightColor;
 
+        glm::mat4 lightProjectionTransform;
+        glm::mat4 lightViewTransform;
+
+        glm::mat4 getProjectionTransform();
+        glm::mat4 getViewTransform();
+
     protected:
 };
 

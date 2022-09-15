@@ -73,7 +73,7 @@ void loadModel(const char* filepath, std::vector<float> *vertices, std::vector<f
             first = first.erase(0, pos + 1);
             tempString = first;
             normalElem = std::stoi(tempString);
-            normalElems->push_back(normalElem);
+            normalElems->push_back(normalElem - 1);
 
             pos = second.find("/");
             tempString = second.substr(0, pos);
@@ -87,7 +87,7 @@ void loadModel(const char* filepath, std::vector<float> *vertices, std::vector<f
             second = second.erase(0, pos + 1);
             tempString = second;
             normalElem = std::stoi(tempString);
-            normalElems->push_back(normalElem);
+            normalElems->push_back(normalElem - 1);
 
             pos = third.find("/");
             tempString = third.substr(0, pos);
@@ -101,7 +101,7 @@ void loadModel(const char* filepath, std::vector<float> *vertices, std::vector<f
             third = third.erase(0, pos + 1);
             tempString = third;
             normalElem = std::stoi(tempString);
-            normalElems->push_back(normalElem);
+            normalElems->push_back(normalElem - 1);
 
         }
     }
@@ -121,16 +121,16 @@ void loadModel(const char* filepath, std::vector<float> *vertices, std::vector<f
 
     for (int i = 0; i < elements->size(); i++) {
 
-        float vertexX = (*tempVertices)[(*elements)[i] * 3];
-        float vertexY = (*tempVertices)[((*elements)[i] * 3) + 1];
-        float vertexZ = (*tempVertices)[((*elements)[i] * 3) + 2];
+        float vertexX = (*tempVertices)[ ( ( *elements )[i] * 3) ];
+        float vertexY = (*tempVertices)[ ( ( *elements )[i] * 3) + 1 ];
+        float vertexZ = (*tempVertices)[ ( ( *elements )[i] * 3) + 2 ];
 
-        float textureX = (*tempTextures)[((*textureElems)[i] * 2)];
-        float textureY = (*tempTextures)[((*textureElems)[i] * 2) + 1];
+        float textureX = (*tempTextures)[ ( ( *textureElems )[i] * 2 ) ];
+        float textureY = (*tempTextures)[ ( ( *textureElems )[i] * 2 ) + 1 ];
 
-        float normalX = (*tempNormals)[((*normalElems)[i] * 3)];
-        float normalY = (*tempNormals)[((*normalElems)[i] * 3) + 1];
-        float normalZ = (*tempNormals)[((*normalElems)[i] * 3) + 2];
+        float normalX = (*tempNormals)[ ( ( *normalElems )[i] * 3 ) ];
+        float normalY = (*tempNormals)[ ( ( *normalElems )[i] * 3 ) + 1 ];
+        float normalZ = (*tempNormals)[ ( ( *normalElems )[i] * 3 ) + 2 ];
         
         vertices->push_back(vertexX);
         vertices->push_back(vertexY);

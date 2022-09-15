@@ -1,5 +1,6 @@
 #include "headers/window.hpp"
 #include "headers/gameObject3DTextured.hpp"
+#include "headers/gameObjectLightSource.hpp"
 #include "headers/renderable.hpp"
 #include <glm/ext/quaternion_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -7,6 +8,7 @@
 namespace dojo {
 
 bool Window::KEYS[KEYS_SIZE];
+int Window::winHeight, Window::winWidth;
 
 Window::Window(int width, int height, const char* name) {
     glfwInit();
@@ -15,8 +17,10 @@ Window::Window(int width, int height, const char* name) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
+    winHeight = height; winWidth = width;
+
     window = glfwCreateWindow(
-            width, height, name,
+            winHeight, winHeight, name,
             NULL, NULL
     );
 
@@ -37,6 +41,8 @@ Window::Window(int width, int height, const char* name) {
     glfwSetFramebufferSizeCallback(window, windowResizeCallback);
     glfwSetKeyCallback(window, keyCallback);
     
+    createShadowMapDependancies();
+
     createCollisionBoxRenderDependancies();
     colliderColor = glm::vec4(0.f, 1.f, 0.f, 0.2f);
 
@@ -55,6 +61,7 @@ Window::~Window() {
 }
 
 void Window::windowResizeCallback(GLFWwindow* window, int width, int height) {
+    winWidth = width, winHeight = height;
     glViewport(0, 0, width, height);
 }
 
@@ -86,6 +93,7 @@ void Window::render(Camera3D *c, GameObject2DSprite *s) {
     glUseProgram(s->shaderProgram);
     glBindVertexArray(s->vertexArrayObject);
 
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, s->texture);
 
     int flipUniformPos = glGetUniformLocation(s->shaderProgram, "flip");
@@ -113,6 +121,7 @@ void Window::render(Camera3D *c, GameObject2DAnimatedSprite *s) {
     glUseProgram(s->shaderProgram);
     glBindVertexArray(s->vertexArrayObject);
 
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, s->currentTexture());
 
     int flipUniformPos = glGetUniformLocation(s->shaderProgram, "flip");
@@ -136,10 +145,19 @@ void Window::render(Camera3D *c, GameObject2DAnimatedSprite *s) {
 }
 
 void Window::render(Camera3D *c, GameObject3DTextured *obj, GameObjectLightSource *light) {
+    glViewport(0, 0, winWidth, winHeight);
     glUseProgram(obj->shaderProgram);
     glBindVertexArray(obj->vertexArrayObject);
 
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, obj->texture);
+    int objectTextureLocation = glGetUniformLocation(obj->shaderProgram, "inTexture");
+    glUniform1i(objectTextureLocation, 0);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    int depthMapTextureLocation = glGetUniformLocation(obj->shaderProgram, "inDepthMap");
+    glUniform1i(depthMapTextureLocation, 1);
 
     int flipUniformPos = glGetUniformLocation(obj->shaderProgram, "flip");
     glUniform1i(flipUniformPos, obj->flip);
@@ -158,11 +176,17 @@ void Window::render(Camera3D *c, GameObject3DTextured *obj, GameObjectLightSourc
     int lightColorLocation = glGetUniformLocation(obj->shaderProgram, "lightColor");
     int lightPosLocation = glGetUniformLocation(obj->shaderProgram, "lightPos");
 
+    int lightViewTransformLocation = glGetUniformLocation(obj->shaderProgram, "lightViewTransform");
+    int lightProjectionTransformLocation = glGetUniformLocation(obj->shaderProgram, "lightProjectionTransform");
+
     glUniform1i(animationFrameUniformLocation, 0);
     glUniform1f(animationChunkSizeUniformLocation, 1.f);
 
     glUniform3fv(lightColorLocation, 1, glm::value_ptr(light->lightColor));
     glUniform3fv(lightPosLocation, 1, glm::value_ptr(light->getPos()));
+
+    glUniformMatrix4fv(lightViewTransformLocation, 1, GL_FALSE, glm::value_ptr(light->getViewTransform()));
+    glUniformMatrix4fv(lightProjectionTransformLocation, 1, GL_FALSE, glm::value_ptr(light->getProjectionTransform()));
 
     //glDrawElements(GL_TRIANGLES, obj->numElements(), GL_UNSIGNED_INT, 0);
     glDrawArrays(GL_TRIANGLES, 0, obj->numVertices());
@@ -200,7 +224,7 @@ void Window::render(Camera3D *c, GameObjectLightSource *light) {
     glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(light->getTransform()));
     glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
     glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
-    glUniform4fv(colorUniformLocation, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.0f)));
+    glUniform4fv(colorUniformLocation, 1, glm::value_ptr(glm::vec4(light->lightColor, 1.f)));
 
     glDrawElements(GL_TRIANGLES, boxElements->size(), GL_UNSIGNED_INT, 0);
     
@@ -239,6 +263,54 @@ void Window::createCollisionBoxRenderDependancies() {
     // create shaders
 
     collisionBoxShaderProgram = Renderable::createBasicShaderProgram("src/shaders/basicSolidColorVert.vert", "src/shaders/basicSolidColorFrag.frag");
+
+}
+
+void Window::createShadowMapDependancies() {
+
+    // create a new framebuffer to render our depth map to
+    glGenFramebuffers(1, &depthMapFrameBuffer);
+
+    // create the texture for the depth map
+    glGenTextures(1, &depthMap);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // attach the texture to the framebuffers depth buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFrameBuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    shadowMapShaderProgram = Renderable::createBasicShaderProgram("src/shaders/shadowVert.vert", "src/shaders/emptyFrag.frag");
+}
+
+void Window::renderShadows(GameObject3DTextured *obj, GameObjectLightSource *light) {
+
+    //glClear(GL_DEPTH_BUFFER_BIT);
+
+    glUseProgram(shadowMapShaderProgram);
+
+    int lightViewLocation = glGetUniformLocation(shadowMapShaderProgram, "lightViewTransform");
+    int lightProjectionLocation = glGetUniformLocation(shadowMapShaderProgram, "lightProjectionTransform");
+    int objectTransformLocation = glGetUniformLocation(shadowMapShaderProgram, "objectTransform");
+    
+    glUniformMatrix4fv(lightViewLocation, 1, GL_FALSE, glm::value_ptr(light->getViewTransform()));
+    glUniformMatrix4fv(lightProjectionLocation, 1, GL_FALSE, glm::value_ptr(light->getProjectionTransform()));
+    glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(obj->getTransform()));
+
+    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFrameBuffer);
+
+    glDrawArrays(GL_TRIANGLES, 0, obj->numVertices());
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 }
 

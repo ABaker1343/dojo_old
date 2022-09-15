@@ -13,7 +13,7 @@ int main () {
     auto *otherObj = new dojo::GameObject3DTextured("monkey.obj", "texture.png",
             glm::vec3(3.f,3.f,0.f));
 
-    auto *lightSource = new dojo::GameObjectLightSource(glm::vec3(0.8f, 0.3f, 0.2f));
+    auto *lightSource = new dojo::GameObjectLightSource(glm::vec3(1.f,1.f,1.f));
 
     std::vector<dojo::GameObject3DTextured*> *objects = new std::vector<dojo::GameObject3DTextured*>();
     objects->push_back(otherObj);
@@ -28,10 +28,14 @@ int main () {
         //rotate the cube
         cube->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
         handleInputs(window, camera, lightSource);
-        //window->render(camera, cube, lightSource);
+        window->renderShadows(cube, lightSource);
+        for (auto obj : *objects) {
+            obj->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
+            window->renderShadows(obj, lightSource);
+        }
+        window->render(camera, cube, lightSource);
         window->render(camera, lightSource);
         for (auto obj : *objects) {
-            //obj->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
             window->render(camera, obj, lightSource);
         }
     }

@@ -25,16 +25,22 @@ namespace dojo {
             Window(int width, int height, const char* name);
             ~Window();
 
+            static int winWidth;
+            static int winHeight;
+
             static bool KEYS[KEYS_SIZE];
 
             void clear();
             bool isAlive();
             void setKill();
+
             void render(Camera3D *c, GameObject2DSprite *s);
             void render(Camera3D *c, GameObject2DAnimatedSprite *s);
             void render(Camera3D *c, GameObject2DCollisionBox *b);
             void render(Camera3D *c, GameObject3DTextured *cube, GameObjectLightSource *light);
             void render(Camera3D *c, GameObjectLightSource *light);
+
+            void renderShadows(GameObject3DTextured *obj, GameObjectLightSource *light);
 
         private:
             GLFWwindow* window;
@@ -46,7 +52,13 @@ namespace dojo {
             std::vector<unsigned int> *boxElements;
             glm::vec4 colliderColor;
 
+            const unsigned int SHADOW_HEIGHT = 1024, SHADOW_WIDTH = 1024;
+            unsigned int depthMapFrameBuffer = 0;
+            unsigned int depthMap = 0;
+            unsigned int shadowMapShaderProgram = 0;
+
             void createCollisionBoxRenderDependancies();
+            void createShadowMapDependancies();
             static void windowResizeCallback(GLFWwindow* window, int width, int height);
             static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
