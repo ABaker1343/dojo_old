@@ -6,6 +6,9 @@
 void handleInput(dojo::Window*, dojo::GameObject*, dojo::GameObject2DCollisionBox*);
 
 int main () {
+
+    FileHandler::shaderPath = "src/shaders/";
+
     auto *window = new dojo::Window(100, 100, "newWIndow");
     auto *square = new dojo::GameObject2DSprite("texture.png", glm::vec3(0.f, 0.f, 0.f), glm::vec3(5.f, 5.f, 1.f));
     auto *camera = new dojo::Camera3D();

@@ -3,15 +3,17 @@
 #include "headers/stb_image.h"
 #include "headers/fileHandler.hpp"
 
-namespace fileHandler {
-    std::string readShader(std::string filepath) {
-        std::ifstream stream(filepath);
-        std::stringstream buffer;
-        buffer << stream.rdbuf();
-        return buffer.str() + '\0';
-    }
 
-void loadModel(const char* filepath, std::vector<float> *vertices, std::vector<float> *textureCoords, std::vector<float> *vertexNormals, std::vector<unsigned int> *elements) {
+std::string FileHandler::shaderPath = "shaders/";
+
+std::string FileHandler::readShader(std::string filepath) {
+    std::ifstream stream(shaderPath + filepath);
+    std::stringstream buffer;
+    buffer << stream.rdbuf();
+    return buffer.str() + '\0';
+}
+
+void FileHandler::loadModel(const char* filepath, std::vector<float> *vertices, std::vector<float> *textureCoords, std::vector<float> *vertexNormals, std::vector<unsigned int> *elements) {
 
     std::ifstream file(filepath);
 
@@ -20,7 +22,7 @@ void loadModel(const char* filepath, std::vector<float> *vertices, std::vector<f
 
     std::vector<float> *tempNormals = new std::vector<float>();
     std::vector<unsigned int> *normalElems = new std::vector<unsigned int>();
-    
+
     std::vector<float> *tempVertices = new std::vector<float>();
     std::vector<unsigned int> *vertexElems = new std::vector<unsigned int>();
 
@@ -108,16 +110,16 @@ void loadModel(const char* filepath, std::vector<float> *vertices, std::vector<f
 
     //textureCoords->resize(vertices->size());
     //for (auto v : *tempVertices) {
-        //vertices->push_back(v);
+    //vertices->push_back(v);
     //}
 
     /*(for (int i = 0; i < elements->size(); i++){
-        if ((*elements)[i] * 2 >= textureCoords->size()){
-            textureCoords->resize((*elements)[i] * 2 + 2);
-        }
-        (*textureCoords)[(*elements)[i] * 2] = (*tempTextures)[(*textureElems)[i] * 2];
-        (*textureCoords)[(*elements)[i] * 2 + 1] = (*tempTextures)[(*textureElems)[i] * 2 + 1];
-    }*/
+      if ((*elements)[i] * 2 >= textureCoords->size()){
+      textureCoords->resize((*elements)[i] * 2 + 2);
+      }
+      (*textureCoords)[(*elements)[i] * 2] = (*tempTextures)[(*textureElems)[i] * 2];
+      (*textureCoords)[(*elements)[i] * 2 + 1] = (*tempTextures)[(*textureElems)[i] * 2 + 1];
+      }*/
 
     for (int i = 0; i < elements->size(); i++) {
 
@@ -131,7 +133,7 @@ void loadModel(const char* filepath, std::vector<float> *vertices, std::vector<f
         float normalX = (*tempNormals)[ ( ( *normalElems )[i] * 3 ) ];
         float normalY = (*tempNormals)[ ( ( *normalElems )[i] * 3 ) + 1 ];
         float normalZ = (*tempNormals)[ ( ( *normalElems )[i] * 3 ) + 2 ];
-        
+
         vertices->push_back(vertexX);
         vertices->push_back(vertexY);
         vertices->push_back(vertexZ);
@@ -151,11 +153,10 @@ void loadModel(const char* filepath, std::vector<float> *vertices, std::vector<f
 
 }
 
-unsigned char* loadImage(const char* filepath, int& width, int& height, int& numChannels) {
+unsigned char* FileHandler::loadImage(const char* filepath, int& width, int& height, int& numChannels) {
     stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load(filepath, &width, &height, &numChannels, 0);
 
     return data;
 }
 
-}

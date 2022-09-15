@@ -263,7 +263,7 @@ void Window::createCollisionBoxRenderDependancies() {
 
     // create shaders
 
-    collisionBoxShaderProgram = Renderable::createBasicShaderProgram("src/shaders/basicSolidColorVert.vert", "src/shaders/basicSolidColorFrag.frag");
+    collisionBoxShaderProgram = Renderable::createBasicShaderProgram("basicSolidColorVert.vert", "basicSolidColorFrag.frag");
 
 }
 
@@ -291,7 +291,7 @@ void Window::createShadowMapDependancies() {
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    shadowMapShaderProgram = Renderable::createBasicShaderProgram("src/shaders/shadowVert.vert", "src/shaders/emptyFrag.frag");
+    shadowMapShaderProgram = Renderable::createBasicShaderProgram("shadowVert.vert", "emptyFrag.frag");
 }
 
 void Window::renderShadows(GameObject3DTextured *obj, GameObjectLightSource *light) {

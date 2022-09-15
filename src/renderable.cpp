@@ -58,8 +58,8 @@ void Renderable::createTexturedObjectBuffersWithOffsetTextures(unsigned int &ver
 }
 
 unsigned int Renderable::createBasicShaderProgram(std::string vertexShaderPath, std::string fragmentShaderPath){
-    std::string vertShaderCode = fileHandler::readShader(vertexShaderPath);
-    std::string fragShaderCode = fileHandler::readShader(fragmentShaderPath);
+    std::string vertShaderCode = FileHandler::readShader(vertexShaderPath);
+    std::string fragShaderCode = FileHandler::readShader(fragmentShaderPath);
 
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -114,7 +114,7 @@ unsigned int Renderable::loadTextureFromFile(const char* filepath) {
     // load the texture from a file and return the texture object
 
     int width, height, numChannels;
-    unsigned char* imageData = fileHandler::loadImage(filepath, width, height, numChannels);
+    unsigned char* imageData = FileHandler::loadImage(filepath, width, height, numChannels);
     //std::cout << width << " " << height << std::endl;
 
     if (!imageData) {

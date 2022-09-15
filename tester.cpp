@@ -24,6 +24,8 @@ void handleInputs(HANDLER_INPUT*);
 
 int main () {
 
+    FileHandler::shaderPath = "src/shaders/";
+
     srand(time(NULL));
 
     dojo::Window *window = new dojo::Window(500, 500, "dojoWindow");

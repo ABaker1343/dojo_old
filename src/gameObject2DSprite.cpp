@@ -28,7 +28,7 @@ GameObject2DSprite::GameObject2DSprite(std::string spritePath, glm::vec3 _pos, g
     if (_shaderProgram > 0) {
         this->shaderProgram = _shaderProgram;
     } else {
-        this->shaderProgram = Renderable::createBasicShaderProgram("src/shaders/basic2DVert.vert", "src/shaders/basic2DFrag.frag");
+        this->shaderProgram = Renderable::createBasicShaderProgram("basic2DVert.vert", "basic2DFrag.frag");
     }
 
     this->texture = Renderable::loadTextureFromFile(spritePath.c_str());
@@ -65,7 +65,7 @@ GameObject2DSprite::GameObject2DSprite(unsigned int _texture, unsigned int _vert
     if (shaderProgram > 0) {
         this->shaderProgram = shaderProgram;
     } else {
-        this->shaderProgram = Renderable::createBasicShaderProgram("src/shaders/basic2DVert.vert", "src/shaders/basic2DFrag.frag");
+        this->shaderProgram = Renderable::createBasicShaderProgram("basic2DVert.vert", "basic2DFrag.frag");
     }
 
     this->texture = _texture;
