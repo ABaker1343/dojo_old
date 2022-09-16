@@ -44,11 +44,5 @@ void main() {
 
     vec3 lighting = ambientLight + diffusionLight * (1 - shadow);
 
-    vec2 texturePos = fs_in.texPos;
-
-    if (flip != 0) {
-            texturePos.x = texturePos.x * -1;
-    }
-
-    fragColor = texture(inTexture, texturePos) * vec4(lighting, 1.0);
+    fragColor = texture(inTexture, fs_in.texPos) * vec4(lighting, 1.0);
 }

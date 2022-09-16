@@ -64,9 +64,9 @@ namespace dojo {
 
             unsigned int depthCubeMapFrameBuffer = 0;
             unsigned int depthCubeMap = 0;
-            unsigned int cubeMapShaderProgram;
+            unsigned int cubeMapShaderProgram= 0;
 
-            unsigned int pointLightShaderProgram;
+            unsigned int pointLightShaderProgram = 0;
 
             void createCollisionBoxRenderDependancies();
             void createShadowMapDependancies();

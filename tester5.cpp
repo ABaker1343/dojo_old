@@ -20,6 +20,7 @@ int main () {
     auto *camera2 = new dojo::Camera3D(0.5f, 0.f, 0.5f, 1.f);
     auto *camera3 = new dojo::Camera3D();
     auto *light = new dojo::GameObjectPointLightSource();
+    //auto *light = new dojo::GameObjectSpotLightSource(glm::vec3(0.f, 0.f, 0.f));
     auto floor = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "texture.png",
             glm::vec3(0.f, -6.f, 0.f), glm::vec3(100.f, 1.f, 100.f));
 
@@ -43,23 +44,17 @@ int main () {
 
         for (auto& o : *objects){
             o.rotate(0.5f, glm::vec3(1.0f, 1.f, 1.f));
-            //o.move(
-                    //o.getPos().x + (rand() % 11) - 5,
-                    //o.getPos().y + (rand() % 11) - 5,
-                    //o.getPos().z + (rand() % 11) - 5
-                  //);
 
-            //window->renderShadows(&o, light);
+            window->renderShadows(&o, light);
         }
 
-        //window->renderShadows(floor, light);
-
+        window->renderShadows(floor, light);
 
         for (auto& o : *objects){
             window->render(camera3, &o, light);
         }
         
-        window->render(camera3, object, light);
+        //window->render(camera3, object, light);
         window->render(camera3, floor, light);
         window->render(camera3, light);
     }

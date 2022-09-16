@@ -13,14 +13,10 @@ GameObject3DTextured::GameObject3DTextured(Shape shape, std::string texturePath,
             createCubeVertices(textureOffset, normalOffset);
     }
 
-    std::cout << "creating cube" << std::endl;
-
     createTexturedObjectBuffersWithOffsetTextures(vertexArrayObject, vertexBuffer, elementBuffer,
             vertices, textureOffset, normalOffset, elements);
     shaderProgram = createBasicShaderProgram("texturedSpotLight.vert", "texturedSpotLight.frag");
     texture = loadTextureFromFile(texturePath.c_str());
-
-    std::cout << "made cube" << std::endl;
 
     this->isClone = false;
 }

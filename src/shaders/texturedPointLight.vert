@@ -24,12 +24,11 @@ void main () {
 
     vec4 renderPos = projection * viewTransform * objectTransform * vec4(aPos, 1.0);
 
-    vs_out.texPos = inTexPos;
-
     gl_Position = renderPos;
+
+    vs_out.texPos = inTexPos;
 
     vs_out.fragPos = vec3(objectTransform * vec4(aPos, 1.0));
 
     vs_out.normal = mat3(transpose(inverse(objectTransform))) * aNormal;
-    //normal = aNormal;
 }

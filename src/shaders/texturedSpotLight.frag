@@ -49,9 +49,5 @@ void main() {
 
     vec2 texturePos = fs_in.texPos;
 
-    if (flip != 0) {
-            texturePos.x = texturePos.x * -1;
-    }
-
     fragColor = texture(inTexture, texturePos) * vec4(lighting, 1.0);
 }
