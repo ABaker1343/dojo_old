@@ -302,6 +302,7 @@ void Window::renderShadows(GameObject3DTextured *obj, GameObjectSpotLightSource 
     //glClear(GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(shadowMapShaderProgram);
+    glBindVertexArray(obj->vertexArrayObject);
 
     int lightViewLocation = glGetUniformLocation(shadowMapShaderProgram, "lightViewTransform");
     int lightProjectionLocation = glGetUniformLocation(shadowMapShaderProgram, "lightProjectionTransform");

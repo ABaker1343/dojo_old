@@ -8,6 +8,9 @@
 void handleInputs(dojo::Window*, dojo::Camera3D*, dojo::GameObjectSpotLightSource*);
 
 int main () {
+
+    srand(time(0));
+
     FileHandler::shaderPath = "src/shaders/";
 
     auto *window = new dojo::Window(100, 100, "newWindow");
@@ -16,24 +19,52 @@ int main () {
     auto *camera1 = new dojo::Camera3D(0.f, 0.f, 0.5f, 0.5f);
     auto *camera2 = new dojo::Camera3D(0.5f, 0.5f, 0.5f, 0.5f);
     auto *camera3 = new dojo::Camera3D();
-    //auto *light = new dojo::GameObjectSpotLightSource(glm::vec3(2.f, 0.f, 2.f));
-    auto *light = new dojo::GameObjectSpotLightSource(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f),
-            glm::vec3(7.f, 7.f, -5.f));
+    auto *light = new dojo::GameObjectSpotLightSource(glm::vec3(2.f, 0.f, 2.f));
+    //auto *light = new dojo::GameObjectSpotLightSource(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f),
+            //glm::vec3(7.f, 7.f, -5.f));
     auto floor = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "texture.png",
             glm::vec3(0.f, -6.f, 0.f), glm::vec3(100.f, 1.f, 100.f));
+
+
+    std::vector<dojo::GameObject3DTextured> *objects = new std::vector<dojo::GameObject3DTextured>();
+    objects->push_back(object);
+
+    for (int i = 0; i < 500; i++) {
+        objects->push_back(dojo::GameObject3DTextured(object, 
+                    glm::vec3(
+                        (rand() % 51) - 25,
+                        (rand() % 26),
+                        (rand() % 51) - 25
+                        )));
+    }
 
     while (window->isAlive()) {
         window->clear();
         window->clearShadow();
         handleInputs(window, camera2, light);
 
-        window->renderShadows(object, light);
+        for (auto& o : *objects){
+            o.rotate(0.5f, glm::vec3(1.0f, 1.f, 1.f));
+            //o.move(
+                    //o.getPos().x + (rand() % 11) - 5,
+                    //o.getPos().y + (rand() % 11) - 5,
+                    //o.getPos().z + (rand() % 11) - 5
+                  //);
+
+            window->renderShadows(&o, light);
+        }
+
         window->renderShadows(floor, light);
 
         window->render(camera2, floor, light);
-        window->render(camera2, object, light);
 
-        window->render(camera1, object, light);
+        for (auto& o : *objects){
+            window->render(camera2, &o, light);
+            window->render(camera1, &o, light);
+        }
+        //window->render(camera2, object, light);
+
+        //window->render(camera1, object, light);
         window->render(camera1, floor, light);
         window->render(camera1, light);
         
@@ -81,6 +112,20 @@ void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObjectSpotLi
                 cam->getPos().z
                 );
     }
+    if (win->KEYS[GLFW_KEY_N]){
+        cam->move(
+                cam->getPos().x,
+                cam->getPos().y - 1,
+                cam->getPos().z
+                );
+    }
+    if (win->KEYS[GLFW_KEY_M]){
+        cam->move(
+                cam->getPos().x,
+                cam->getPos().y + 1,
+                cam->getPos().z
+                );
+    }
 
 
     if (win->KEYS[GLFW_KEY_LEFT]){
@@ -109,6 +154,20 @@ void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObjectSpotLi
                 light->getPos().x,
                 light->getPos().y,
                 light->getPos().z + 1
+                );
+    }
+    if (win->KEYS[GLFW_KEY_J]){
+        light->move(
+                light->getPos().x,
+                light->getPos().y - 1,
+                light->getPos().z
+                );
+    }
+    if (win->KEYS[GLFW_KEY_K]){
+        light->move(
+                light->getPos().x,
+                light->getPos().y + 1,
+                light->getPos().z
                 );
     }
 }
