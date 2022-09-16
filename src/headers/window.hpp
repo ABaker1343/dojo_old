@@ -16,6 +16,7 @@
 #include "renderable.hpp"
 #include "gameObject3DTextured.hpp"
 #include "gameObjectSpotLightSource.hpp"
+#include "gameObjectPointLightSource.hpp"
 
 #define KEYS_SIZE 349
 
@@ -39,9 +40,12 @@ namespace dojo {
             void render(Camera3D *c, GameObject2DAnimatedSprite *s);
             void render(Camera3D *c, GameObject2DCollisionBox *b);
             void render(Camera3D *c, GameObject3DTextured *cube, GameObjectSpotLightSource *light);
+            void render(Camera3D *c, GameObject3DTextured *cube, GameObjectPointLightSource *light);
             void render(Camera3D *c, GameObjectSpotLightSource *light);
+            void render(Camera3D *c, GameObjectPointLightSource *light);
 
             void renderShadows(GameObject3DTextured *obj, GameObjectSpotLightSource *light);
+            void renderShadows(GameObject3DTextured *obj, GameObjectPointLightSource *light);
 
         private:
             GLFWwindow* window;
@@ -58,8 +62,15 @@ namespace dojo {
             unsigned int depthMap = 0;
             unsigned int shadowMapShaderProgram = 0;
 
+            unsigned int depthCubeMapFrameBuffer = 0;
+            unsigned int depthCubeMap = 0;
+            unsigned int cubeMapShaderProgram;
+
+            unsigned int pointLightShaderProgram;
+
             void createCollisionBoxRenderDependancies();
             void createShadowMapDependancies();
+            void createShadowCubeMapDependancies();
             static void windowResizeCallback(GLFWwindow* window, int width, int height);
             static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 

@@ -27,6 +27,7 @@ class Renderable {
         static unsigned int createVertexBuffer(std::vector<float> *vertices);
 
         static unsigned int createBasicShaderProgram(std::string vertexShaderPath, std::string fragmentShaderPath);
+        static unsigned int createBasicShaderProgramWithGeometry(std::string vertexShaderPath, std::string GeometryShaderPath, std::string fragmentShaderPath);
 
         static unsigned int loadTextureFromFile(const char* filepath);
 

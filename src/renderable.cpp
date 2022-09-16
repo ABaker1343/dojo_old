@@ -110,6 +110,72 @@ unsigned int Renderable::createBasicShaderProgram(std::string vertexShaderPath, 
 
 }
 
+unsigned int Renderable::createBasicShaderProgramWithGeometry(std::string vertexShaderPath, std::string geometryShaderPath, std::string fragmentShaderPath) {
+    std::string vertShaderCode = FileHandler::readShader(vertexShaderPath);
+    std::string fragShaderCode = FileHandler::readShader(fragmentShaderPath);
+    std::string geomShaderCode = FileHandler::readShader(geometryShaderPath);
+
+    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    unsigned int geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+    unsigned int shaderProgram = glCreateProgram();
+
+    const char* vertShaderCode_cstr = vertShaderCode.c_str();
+    const char* fragShaderCode_cstr = fragShaderCode.c_str();
+    const char* geomShaderCode_cstr = geomShaderCode.c_str();
+
+    glShaderSource(vertexShader, 1, &vertShaderCode_cstr, NULL);
+    glShaderSource(fragmentShader, 1, &fragShaderCode_cstr, NULL);
+    glShaderSource(geometryShader, 1, &geomShaderCode_cstr, NULL);
+
+    int success;
+    char info[512];
+
+    glCompileShader(vertexShader);
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, info);
+        std::cout << info << std::endl;
+        throw std::runtime_error("failed to compile vertex shader");
+    }
+
+    glCompileShader(fragmentShader);
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, info);
+        std::cout << info << std::endl;
+        throw std::runtime_error("failed to compile fragment shader");
+    }
+    
+    glCompileShader(geometryShader);
+    glGetShaderiv(geometryShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(geometryShader, 512, NULL, info);
+        std::cout << info << std::endl;
+        throw std::runtime_error("failed to compile geometry shader");
+    }
+
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, geometryShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(shaderProgram, 512, NULL, info);
+        std::cout << info << std::endl;
+        throw std::runtime_error("failed to link shader program");
+    }
+
+    //glDeleteShader(vertexShader);
+    //glDeleteShader(fragmentShader); 
+    //free((char*)vertShaderCode_cstr);
+    //free((char*)fragShaderCode_cstr);
+
+    return shaderProgram;
+
+}
+
 unsigned int Renderable::loadTextureFromFile(const char* filepath) {
     // load the texture from a file and return the texture object
 

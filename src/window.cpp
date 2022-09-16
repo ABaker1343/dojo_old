@@ -1,5 +1,6 @@
 #include "headers/window.hpp"
 #include "headers/gameObject3DTextured.hpp"
+#include "headers/gameObjectPointLightSource.hpp"
 #include "headers/renderable.hpp"
 #include <glm/ext/quaternion_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -41,6 +42,7 @@ Window::Window(int width, int height, const char* name) {
     glfwSetKeyCallback(window, keyCallback);
     
     createShadowMapDependancies();
+    //createShadowCubeMapDependancies();
 
     createCollisionBoxRenderDependancies();
     colliderColor = glm::vec4(0.f, 1.f, 0.f, 0.2f);
@@ -195,6 +197,57 @@ void Window::render(Camera3D *c, GameObject3DTextured *obj, GameObjectSpotLightS
 
 }
 
+void Window::render(Camera3D *c, GameObject3DTextured *obj, GameObjectPointLightSource *light) {
+    glViewport(c->viewport.x * winWidth, c->viewport.y * winHeight, c->viewport.w * winWidth, c->viewport.h * winHeight);
+    //glUseProgram(pointLightShaderProgram);
+    glUseProgram(obj->shaderProgram);
+    glBindVertexArray(obj->vertexArrayObject);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, obj->texture);
+    //glBindTexture(GL_TEXTURE_2D, depthMap);
+    int objectTextureLocation = glGetUniformLocation(obj->shaderProgram, "inTexture");
+    glUniform1i(objectTextureLocation, 0);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, depthMap);
+    int depthMapTextureLocation = glGetUniformLocation(obj->shaderProgram, "inDepthMap");
+    glUniform1i(depthMapTextureLocation, 1);
+
+    int flipUniformPos = glGetUniformLocation(obj->shaderProgram, "flip");
+    glUniform1i(flipUniformPos, obj->flip);
+
+    int objectTransformLocation = glGetUniformLocation(obj->shaderProgram, "objectTransform");
+    int viewTransformLocation = glGetUniformLocation(obj->shaderProgram, "viewTransform");
+    int projectionTransformLocation = glGetUniformLocation(obj->shaderProgram, "projection");
+
+    glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(obj->transform));
+    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->getTransform()));
+    glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->getProjectionTransform()));
+
+    int animationFrameUniformLocation = glGetUniformLocation(obj->shaderProgram, "animationFrame");
+    int animationChunkSizeUniformLocation = glGetUniformLocation(obj->shaderProgram, "animationChunkSize");
+
+    int lightColorLocation = glGetUniformLocation(obj->shaderProgram, "lightColor");
+    int lightPosLocation = glGetUniformLocation(obj->shaderProgram, "lightPos");
+
+    int  lightViewTransformLocation= glGetUniformLocation(obj->shaderProgram, "lightViewTransform");
+    int lightProjectionTransformLocation = glGetUniformLocation(obj->shaderProgram, "lightProjectionTransform");
+
+    glUniform1i(animationFrameUniformLocation, 0);
+    glUniform1f(animationChunkSizeUniformLocation, 1.f);
+
+    glUniform3fv(lightColorLocation, 1, glm::value_ptr(light->lightColor));
+    glUniform3fv(lightPosLocation, 1, glm::value_ptr(light->getPos()));
+
+    //glUniformMatrix4fv(lightViewTransformLocation, 1, GL_FALSE, glm::value_ptr(light->getViewTransform()));
+    //glUniformMatrix4fv(lightProjectionTransformLocation, 1, GL_FALSE, glm::value_ptr(light->getProjectionTransform()));
+
+    //glDrawElements(GL_TRIANGLES, obj->numElements(), GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLES, 0, obj->numVertices());
+
+}
+
 void Window::render(Camera3D *c, GameObject2DCollisionBox *b) {
     glViewport(c->viewport.x * winWidth, c->viewport.y * winHeight, c->viewport.w * winWidth, c->viewport.h * winHeight);
 
@@ -232,6 +285,25 @@ void Window::render(Camera3D *c, GameObjectSpotLightSource *light) {
 
     glDrawElements(GL_TRIANGLES, boxElements->size(), GL_UNSIGNED_INT, 0);
     
+}
+
+void Window::render(Camera3D *c, GameObjectPointLightSource *light) {
+    glViewport(c->viewport.x * winWidth, c->viewport.y * winHeight, c->viewport.w * winWidth, c->viewport.h * winHeight);
+
+    glUseProgram(collisionBoxShaderProgram);
+    glBindVertexArray(collisionBoxVertexArray);
+
+    int objectTransformLocation = glGetUniformLocation(collisionBoxShaderProgram, "objectTransform");
+    int viewTransformLocation = glGetUniformLocation(collisionBoxShaderProgram, "viewTransform");
+    int projectionTransformLocation = glGetUniformLocation(collisionBoxShaderProgram, "projection");
+    int colorUniformLocation = glGetUniformLocation(collisionBoxShaderProgram, "inColor");
+
+    glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(light->getTransform()));
+    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
+    glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
+    glUniform4fv(colorUniformLocation, 1, glm::value_ptr(glm::vec4(light->lightColor, 1.f)));
+
+    glDrawElements(GL_TRIANGLES, boxElements->size(), GL_UNSIGNED_INT, 0);
 }
 
 void Window::createCollisionBoxRenderDependancies() {
@@ -297,6 +369,36 @@ void Window::createShadowMapDependancies() {
     shadowMapShaderProgram = Renderable::createBasicShaderProgram("shadowVert.vert", "emptyFrag.frag");
 }
 
+void Window::createShadowCubeMapDependancies() {
+    
+    // generate the cubeMap texture
+    glGenTextures(1, &depthCubeMap);
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
+    for (unsigned int i = 0; i < 6; i++) {
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
+                SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    // bind the cube map texture to the depth buffer
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, depthCubeMapFrameBuffer);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubeMap, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    cubeMapShaderProgram = Renderable::createBasicShaderProgramWithGeometry("cubeMapShader.vert", "cubeMapShader.geom", "emptyFrag.frag");
+    pointLightShaderProgram = Renderable::createBasicShaderProgram("texturedPointLight.vert", "texturedPointLight.frag");
+
+}
+
 void Window::renderShadows(GameObject3DTextured *obj, GameObjectSpotLightSource *light) {
 
     //glClear(GL_DEPTH_BUFFER_BIT);
@@ -319,6 +421,28 @@ void Window::renderShadows(GameObject3DTextured *obj, GameObjectSpotLightSource 
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+
+}
+
+void Window::renderShadows(GameObject3DTextured* obj, GameObjectPointLightSource *light) {
+    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthCubeMapFrameBuffer);
+    glUseProgram(cubeMapShaderProgram);
+
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
+
+    int objectTransformLocation = glGetUniformLocation(cubeMapShaderProgram, "objectTransform");
+    int lightViewTransformsLocation = glGetUniformLocation(cubeMapShaderProgram, "lightViewTransforms");
+    int lightProjectionTransformLocation = glGetUniformLocation(cubeMapShaderProgram, "lightProjectionTransform");
+
+    glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(obj->getTransform()));
+    glUniformMatrix4fv(lightViewTransformsLocation, 6, GL_FALSE, glm::value_ptr(light->getViewTransforms()[0]));
+    glUniformMatrix4fv(lightProjectionTransformLocation, 1, GL_FALSE, glm::value_ptr(light->getProjectionTransform()));
+
+    glDrawArrays(GL_TRIANGLES, 0, obj->numVertices());
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Window::clearShadow() {

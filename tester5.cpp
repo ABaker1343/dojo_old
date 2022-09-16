@@ -5,7 +5,7 @@
 #include "src/headers/window.hpp"
 #include <GLFW/glfw3.h>
 
-void handleInputs(dojo::Window*, dojo::Camera3D*, dojo::GameObjectSpotLightSource*);
+void handleInputs(dojo::Window*, dojo::Camera3D*, dojo::GameObjectPointLightSource*);
 
 int main () {
 
@@ -19,7 +19,7 @@ int main () {
     auto *camera1 = new dojo::Camera3D(0.f, 0.f, 0.5f, 1.f);
     auto *camera2 = new dojo::Camera3D(0.5f, 0.f, 0.5f, 1.f);
     auto *camera3 = new dojo::Camera3D();
-    auto *light = new dojo::GameObjectSpotLightSource(glm::vec3(2.f, 0.f, 2.f));
+    auto *light = new dojo::GameObjectPointLightSource();
     auto floor = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "texture.png",
             glm::vec3(0.f, -6.f, 0.f), glm::vec3(100.f, 1.f, 100.f));
 
@@ -39,7 +39,7 @@ int main () {
     while (window->isAlive()) {
         window->clear();
         window->clearShadow();
-        handleInputs(window, camera2, light);
+        handleInputs(window, camera3, light);
 
         for (auto& o : *objects){
             o.rotate(0.5f, glm::vec3(1.0f, 1.f, 1.f));
@@ -49,26 +49,19 @@ int main () {
                     //o.getPos().z + (rand() % 11) - 5
                   //);
 
-            window->renderShadows(&o, light);
+            //window->renderShadows(&o, light);
         }
 
-        window->renderShadows(floor, light);
+        //window->renderShadows(floor, light);
 
-        window->render(camera2, floor, light);
 
         for (auto& o : *objects){
-            window->render(camera2, &o, light);
-            window->render(camera1, &o, light);
+            window->render(camera3, &o, light);
         }
-        //window->render(camera2, object, light);
-
-        //window->render(camera1, object, light);
-        window->render(camera1, floor, light);
-        window->render(camera1, light);
         
-        //window->render(camera3, object, light);
-        //window->render(camera3, floor, light);
-        //window->render(camera3, light);
+        window->render(camera3, object, light);
+        window->render(camera3, floor, light);
+        window->render(camera3, light);
     }
 
     delete window;
@@ -81,7 +74,7 @@ int main () {
 
 }
 
-void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObjectSpotLightSource* light) {
+void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObjectPointLightSource* light) {
     if (win->KEYS[GLFW_KEY_W]){
         cam->move(
                 cam->getPos().x,
