@@ -17,7 +17,7 @@ GameObject3DTextured::GameObject3DTextured(Shape shape, std::string texturePath,
 
     createTexturedObjectBuffersWithOffsetTextures(vertexArrayObject, vertexBuffer, elementBuffer,
             vertices, textureOffset, normalOffset, elements);
-    shaderProgram = createBasicShaderProgram("basicTexturedVert.vert", "basicTexturedFrag.frag");
+    shaderProgram = createBasicShaderProgram("TexturedSpotLight.vert", "TexturedSpotLight.frag");
     texture = loadTextureFromFile(texturePath.c_str());
 
     std::cout << "made cube" << std::endl;
@@ -193,7 +193,7 @@ GameObject3DTextured::GameObject3DTextured(std::string objectPath, std::string t
 
     Renderable::createTexturedObjectBuffersWithOffsetTextures(vertexArrayObject, vertexBuffer, elementBuffer,
             vertices, textureOffset, normalsOffset, elements);
-    shaderProgram = Renderable::createBasicShaderProgram("basicTexturedVert.vert", "basicTexturedFrag.frag");
+    shaderProgram = Renderable::createBasicShaderProgram("TexturedSpotLight.vert", "TexturedSpotLight.frag");
     texture = loadTextureFromFile(texturePath.c_str());
 
     

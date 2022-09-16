@@ -6,4 +6,4 @@
 #include "gameObject2DCollisionBox.hpp"
 #include "camera2D.hpp"
 #include "gameObject3DTextured.hpp"
-#include "gameObjectLightSource.hpp"
+#include "gameObjectSpotLightSource.hpp"

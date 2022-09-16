@@ -1,7 +1,6 @@
 #include "src/headers/camera3D.hpp"
 #include "src/headers/dojo.hpp"
 #include "src/headers/gameObject3DTextured.hpp"
-#include "src/headers/gameObjectLightSource.hpp"
 #include "src/headers/window.hpp"
 
 void handleInputs(dojo::Window*, dojo::Camera3D*, dojo::GameObject*);
@@ -16,7 +15,7 @@ int main () {
     auto *otherObj = new dojo::GameObject3DTextured("monkey.obj", "texture.png",
             glm::vec3(3.f,3.f,0.f));
 
-    auto *lightSource = new dojo::GameObjectLightSource(glm::vec3(1.f, 1.f, 1.f),
+    auto *lightSource = new dojo::GameObjectSpotLightSource(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f),
             glm::vec3(7.f, 7.f, -5.f));
 
     auto largeCube = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "animation0.jpg",

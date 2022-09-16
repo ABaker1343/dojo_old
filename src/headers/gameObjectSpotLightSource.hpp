@@ -6,14 +6,15 @@
 
 namespace dojo {
 
-class GameObjectLightSource : public GameObject, public Renderable {
+class GameObjectSpotLightSource : public GameObject, public Renderable {
     public:
-        GameObjectLightSource(glm::vec3 color = glm::vec3(1.f, 1.f, 1.f),
+        GameObjectSpotLightSource(glm::vec3 target, glm::vec3 color = glm::vec3(1.f, 1.f, 1.f),
                 glm::vec3 pos = glm::vec3(0.f, 0.f, 0.f), glm::vec3 scale = glm::vec3(1.f, 1.f, 1.f));
 
-        ~GameObjectLightSource();
+        ~GameObjectSpotLightSource();
 
         glm::vec3 lightColor;
+        glm::vec3 m_target;
 
         glm::mat4 lightProjectionTransform;
         glm::mat4 lightViewTransform;

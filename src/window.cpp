@@ -1,6 +1,5 @@
 #include "headers/window.hpp"
 #include "headers/gameObject3DTextured.hpp"
-#include "headers/gameObjectLightSource.hpp"
 #include "headers/renderable.hpp"
 #include <glm/ext/quaternion_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -90,6 +89,7 @@ void Window::clear() {
 }
 
 void Window::render(Camera3D *c, GameObject2DSprite *s) {
+    glViewport(c->viewport.x * winWidth, c->viewport.y * winHeight, c->viewport.w * winWidth, c->viewport.h * winHeight);
     glUseProgram(s->shaderProgram);
     glBindVertexArray(s->vertexArrayObject);
 
@@ -118,6 +118,7 @@ void Window::render(Camera3D *c, GameObject2DSprite *s) {
 }
 
 void Window::render(Camera3D *c, GameObject2DAnimatedSprite *s) {
+    glViewport(c->viewport.x * winWidth, c->viewport.y * winHeight, c->viewport.w * winWidth, c->viewport.h * winHeight);
     glUseProgram(s->shaderProgram);
     glBindVertexArray(s->vertexArrayObject);
 
@@ -144,8 +145,8 @@ void Window::render(Camera3D *c, GameObject2DAnimatedSprite *s) {
     glDrawElements(GL_TRIANGLES, s->numElements(), GL_UNSIGNED_INT, 0);
 }
 
-void Window::render(Camera3D *c, GameObject3DTextured *obj, GameObjectLightSource *light) {
-    glViewport(0, 0, winWidth, winHeight);
+void Window::render(Camera3D *c, GameObject3DTextured *obj, GameObjectSpotLightSource *light) {
+    glViewport(c->viewport.x * winWidth, c->viewport.y * winHeight, c->viewport.w * winWidth, c->viewport.h * winHeight);
     glUseProgram(obj->shaderProgram);
     glBindVertexArray(obj->vertexArrayObject);
 
@@ -195,6 +196,7 @@ void Window::render(Camera3D *c, GameObject3DTextured *obj, GameObjectLightSourc
 }
 
 void Window::render(Camera3D *c, GameObject2DCollisionBox *b) {
+    glViewport(c->viewport.x * winWidth, c->viewport.y * winHeight, c->viewport.w * winWidth, c->viewport.h * winHeight);
 
     glUseProgram(collisionBoxShaderProgram);
     glBindVertexArray(collisionBoxVertexArray);
@@ -212,7 +214,8 @@ void Window::render(Camera3D *c, GameObject2DCollisionBox *b) {
     glDrawElements(GL_TRIANGLES, boxElements->size(), GL_UNSIGNED_INT, 0);
 }
 
-void Window::render(Camera3D *c, GameObjectLightSource *light) {
+void Window::render(Camera3D *c, GameObjectSpotLightSource *light) {
+    glViewport(c->viewport.x * winWidth, c->viewport.y * winHeight, c->viewport.w * winWidth, c->viewport.h * winHeight);
 
     glUseProgram(collisionBoxShaderProgram);
     glBindVertexArray(collisionBoxVertexArray);
@@ -294,7 +297,7 @@ void Window::createShadowMapDependancies() {
     shadowMapShaderProgram = Renderable::createBasicShaderProgram("shadowVert.vert", "emptyFrag.frag");
 }
 
-void Window::renderShadows(GameObject3DTextured *obj, GameObjectLightSource *light) {
+void Window::renderShadows(GameObject3DTextured *obj, GameObjectSpotLightSource *light) {
 
     //glClear(GL_DEPTH_BUFFER_BIT);
 

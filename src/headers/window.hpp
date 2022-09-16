@@ -15,7 +15,7 @@
 #include "gameObject2DCollisionBox.hpp"
 #include "renderable.hpp"
 #include "gameObject3DTextured.hpp"
-#include "gameObjectLightSource.hpp"
+#include "gameObjectSpotLightSource.hpp"
 
 #define KEYS_SIZE 349
 
@@ -38,10 +38,10 @@ namespace dojo {
             void render(Camera3D *c, GameObject2DSprite *s);
             void render(Camera3D *c, GameObject2DAnimatedSprite *s);
             void render(Camera3D *c, GameObject2DCollisionBox *b);
-            void render(Camera3D *c, GameObject3DTextured *cube, GameObjectLightSource *light);
-            void render(Camera3D *c, GameObjectLightSource *light);
+            void render(Camera3D *c, GameObject3DTextured *cube, GameObjectSpotLightSource *light);
+            void render(Camera3D *c, GameObjectSpotLightSource *light);
 
-            void renderShadows(GameObject3DTextured *obj, GameObjectLightSource *light);
+            void renderShadows(GameObject3DTextured *obj, GameObjectSpotLightSource *light);
 
         private:
             GLFWwindow* window;

@@ -1,10 +1,10 @@
 CC=g++
 CFLAGS=-Wall -I. -lGL -lGLU -lglut -lglfw
-OBJ=fileHandler.o gameObject.o window.o renderable.o glad.o gameObject2DSprite.o camera2D.o gameObject2DAnimatedSprite.o gameObject2DCollisionBox.o camera3D.o gameObject3DTextured.o gameObjectLightSource.o
+OBJ=fileHandler.o gameObject.o window.o renderable.o glad.o gameObject2DSprite.o camera2D.o gameObject2DAnimatedSprite.o gameObject2DCollisionBox.o camera3D.o gameObject3DTextured.o gameObjectSpotLightSource.o
 
-HEADERS=fileHandler.hpp gameObject.hpp win.hppw.hpp renderable.hpp gameObject2DSprite camera2D.hpp gameObject2DAnimatedSprite.hpp gameObject2DCollisionBox.hpp camera3D.hpp gameObject3DTextured.hpp gameObjectLightSource.hpp
+HEADERS=fileHandler.hpp gameObject.hpp win.hppw.hpp renderable.hpp gameObject2DSprite camera2D.hpp gameObject2DAnimatedSprite.hpp gameObject2DCollisionBox.hpp camera3D.hpp gameObject3DTextured.hpp gameObjectSpotLightSource.hpp
 
-SOURCE=fileHandler.cpp gameObject.cpp win.cppw.cpp renderable.cpp glad.c gameObject2DSprite camera2D.cpp gameObject2DAnimatedSprite.cpp gameObject2DCollisionBox.cpp camera3D.cpp gameObject3DTextured.cpp gameObjectLightSource.cpp
+SOURCE=fileHandler.cpp gameObject.cpp win.cppw.cpp renderable.cpp glad.c gameObject2DSprite camera2D.cpp gameObject2DAnimatedSprite.cpp gameObject2DCollisionBox.cpp camera3D.cpp gameObject3DTextured.cpp gameObjectSpotLightSource.cpp
 
 ../libdojo.so: $(OBJ)
 	$(CC) -shared -o ../libdojo.so $^ $(CFLAGS)

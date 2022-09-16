@@ -3,7 +3,7 @@
 
 namespace dojo {
 
-    Camera3D::Camera3D() {
+    Camera3D::Camera3D(float relativeViewPortX, float relativeViewPortY, float relativeViewPortW, float relativeViewPortH) {
         transform = glm::mat4(1.f);
         transform = glm::translate(transform, glm::vec3(0.f, 0.f, -30.f));
 
@@ -13,6 +13,13 @@ namespace dojo {
                 0.1f,
                 100.f
             );
+
+        viewport = RELATIVE_VIEWPORT {
+            relativeViewPortX,
+            relativeViewPortY,
+            relativeViewPortW,
+            relativeViewPortH,
+        };
     }
 
     Camera3D::~Camera3D() {
