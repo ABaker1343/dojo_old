@@ -10,7 +10,7 @@ namespace dojo {
 
 class Camera3D : public GameObject {
     public:
-        Camera3D(float relativeViewPortX = 0.f, float relativeViewPortY = 0.f, float relativeViewPortW = 1.0f, float relativeViewPortH = 1.0f);
+        Camera3D(glm::vec3 pos = glm::vec3(0.f, 5.f, 50.f));
         ~Camera3D();
 
         typedef struct RELATIVE_VIEWPORT_STRUCT {
@@ -22,11 +22,9 @@ class Camera3D : public GameObject {
 
         RELATIVE_VIEWPORT viewport;
 
-        //glm::mat4 transform;
         glm::mat4 projection;
 
-        //glm::vec3 pos;
-        //glm::vec3 target;
+        void setViewPort(float relativex, float relativey, float relativew, float relativeh);
 
         void move(float x, float y, float z = 0.f);
         glm::vec3 getPos();
@@ -34,9 +32,14 @@ class Camera3D : public GameObject {
         void rotate(float degrees, glm::vec3 axis);
 
         glm::mat4 getProjectionTransform();
+        glm::mat4 getTransform();
 
 
     private:
+        glm::vec3 cameraPos;
+        glm::vec3 cameraFront;
+        glm::vec3 cameraUp;
+
 };
 
 }

@@ -16,15 +16,13 @@ int main () {
     auto *window = new dojo::Window(100, 100, "newWindow");
     auto *object = new dojo::GameObject3DTextured("monkey.obj", "texture.png",
             glm::vec3(2.f, 0.f, 2.f));
-    auto *camera1 = new dojo::Camera3D(0.f, 0.f, 0.5f, 1.f);
-    auto *camera2 = new dojo::Camera3D(0.5f, 0.f, 0.5f, 1.f);
-    auto *camera3 = new dojo::Camera3D();
     auto *light = new dojo::GameObjectPointLightSource();
     //auto *light = new dojo::GameObjectSpotLightSource(glm::vec3(0.f, 0.f, 0.f));
     auto floor = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "texture.png",
             glm::vec3(0.f, -6.f, 0.f), glm::vec3(100.f, 1.f, 100.f));
     auto *backwall = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "texture.png",
             glm::vec3(0.f, 44.f, -50.f), glm::vec3(100.f, 100.f, 1.f));
+    auto *camera3 = new dojo::Camera3D(object->getPos());
 
 
     std::vector<dojo::GameObject3DTextured> *objects = new std::vector<dojo::GameObject3DTextured>();
@@ -65,8 +63,6 @@ int main () {
 
     delete window;
     delete object;
-    delete camera1;
-    delete camera2;
     delete camera3;
     delete light;
     delete floor;
@@ -176,10 +172,10 @@ void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObjectPointL
     // mouse movement
 
     if (mouseMovementx > 0 || mouseMovementx < 0) {
-        cam->rotate(mouseMovementx, glm::vec3(0.f, 1.f, 0.f));
+        cam->rotate(mouseMovementx * 0.01, glm::vec3(0.f, 1.f, 0.f));
     }
     if (mouseMovementy > 0 || mouseMovementy < 0) {
-        cam->rotate(-mouseMovementy, glm::vec3(1.f, 0.f, 0.f));
+        cam->rotate(-mouseMovementy * 0.01, glm::vec3(1.f, 0.f, 0.f));
     }
 
 }

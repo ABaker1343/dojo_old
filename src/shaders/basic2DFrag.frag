@@ -20,4 +20,5 @@ void main () {
     }
 
     fragColor = texture(inTexture, texturePos);
+
 }

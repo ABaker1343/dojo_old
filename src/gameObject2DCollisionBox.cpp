@@ -86,6 +86,9 @@ glm::vec3 GameObject2DCollisionBox::getAbsolutePos() {
         absolutePos.x = ownerPos.x + ownerScale.x - (ownerScale.x * this->relativeScale.x);
         absolutePos.y = ownerPos.y + (ownerScale.y * this->relativeOffset.y);
         absolutePos.z = ownerPos.z + (ownerScale.z * this->relativeOffset.z);
+
+        //ownerback - offset - boxScale;
+        absolutePos.x = (ownerPos.x + ownerScale.x) - (ownerScale.x * relativeOffset.x) - (ownerScale.x * relativeScale.x);
     }
 
     return absolutePos;

@@ -10,7 +10,6 @@ int main () {
     FileHandler::shaderPath = "src/shaders/";
 
     auto *window = new dojo::Window(100, 100, "new Window");
-    auto *camera = new dojo::Camera3D();
     auto *cube = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "texture.png");
     auto *otherObj = new dojo::GameObject3DTextured("monkey.obj", "texture.png",
             glm::vec3(3.f,3.f,0.f));
@@ -20,6 +19,8 @@ int main () {
 
     auto largeCube = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "animation0.jpg",
             glm::vec3(0.f, -5.f, 0.f), glm::vec3(100.f, 1.f, 100.f));
+
+    auto *camera = new dojo::Camera3D();
 
     std::vector<dojo::GameObject3DTextured*> *objects = new std::vector<dojo::GameObject3DTextured*>();
     objects->push_back(otherObj);

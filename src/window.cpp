@@ -139,6 +139,8 @@ void Window::render(Camera3D *c, GameObject2DSprite *s) {
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, s->texture);
+    int textureLocation = glGetUniformLocation(shaderProgram2D, "inTexture");
+    glUniform1i(textureLocation, 0);
 
     int flipUniformPos = glGetUniformLocation(shaderProgram2D, "flip");
     glUniform1i(flipUniformPos, s->flip);
@@ -432,7 +434,6 @@ void Window::createShadowCubeMapDependancies() {
 void Window::createShaderPrograms() {
     // create shaders for 2D gameObjects
     shaderProgram2D = Renderable::createBasicShaderProgram("basic2DVert.vert", "basic2DFrag.frag");
-    collisionBoxShaderProgram = Renderable::createBasicShaderProgram("basicSolidColorVert.vert", "basicSolidColorFrag.frag");
     collisionBoxShaderProgram = Renderable::createBasicShaderProgram("basicSolidColorVert.vert", "basicSolidColorFrag.frag");
 
     // create shader programs that will render to framebuffers for depth mapping

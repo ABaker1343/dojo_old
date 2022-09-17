@@ -16,8 +16,10 @@ int main () {
     auto *window = new dojo::Window(100, 100, "newWindow");
     auto *object = new dojo::GameObject3DTextured("monkey.obj", "texture.png",
             glm::vec3(2.f, 0.f, 2.f));
-    auto *camera1 = new dojo::Camera3D(0.f, 0.f, 0.5f, 1.f);
-    auto *camera2 = new dojo::Camera3D(0.5f, 0.f, 0.5f, 1.f);
+    auto *camera1 = new dojo::Camera3D();
+    camera1->setViewPort(0.f, 0.f, 0.5f, 1.f);
+    auto *camera2 = new dojo::Camera3D();
+    camera2->setViewPort(0.5f, 0.f, 0.5f, 1.f);
     auto *camera3 = new dojo::Camera3D();
     auto *light = new dojo::GameObjectSpotLightSource(glm::vec3(2.f, 0.f, 2.f));
     auto floor = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "texture.png",

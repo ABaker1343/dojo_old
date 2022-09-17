@@ -65,4 +65,12 @@ void handleInput(dojo::Window* window, dojo::GameObject* obj, dojo::GameObject2D
                 );
     std::cout << "collider pos" << collider->getAbsolutePos().x << " " << collider->getAbsolutePos().y << std::endl;
     }
+
+    if (window->KEYS[GLFW_KEY_F]) {
+        obj->flip = !(obj->flip);
+    }
+
+
+
+
 }

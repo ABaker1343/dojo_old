@@ -25,6 +25,8 @@ GameObject2DSprite::GameObject2DSprite(std::string spritePath, glm::vec3 _pos, g
                 this->vertices, this->elements);
     }
 
+    this->texture = Renderable::loadTextureFromFile(spritePath.c_str());
+
     flip = 0;
 
     isCopy = false;
