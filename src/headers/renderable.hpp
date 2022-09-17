@@ -14,8 +14,6 @@ class Renderable {
     public:
         unsigned int vertexArrayObject;
 
-        unsigned int shaderProgram;
-
         int numElements();
         int numVertices();
 

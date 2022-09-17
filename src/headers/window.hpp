@@ -19,6 +19,7 @@
 #include "gameObjectPointLightSource.hpp"
 
 #define KEYS_SIZE 349
+#define MOUSE_BUTTONS_SIZE 8
 
 namespace dojo {
     class Window {
@@ -30,6 +31,9 @@ namespace dojo {
             static int winHeight;
 
             static bool KEYS[KEYS_SIZE];
+            static bool MOUSE_BUTTONS[MOUSE_BUTTONS_SIZE];
+            static double MOUSE_POSITION_X;
+            static double MOUSE_POSITION_Y;
 
             void clear();
             void clearShadow();
@@ -58,21 +62,33 @@ namespace dojo {
             glm::vec4 colliderColor;
 
             const unsigned int SHADOW_HEIGHT = 1024, SHADOW_WIDTH = 1024;
+
             unsigned int depthMapFrameBuffer = 0;
             unsigned int depthMap = 0;
-            unsigned int shadowMapShaderProgram = 0;
 
             unsigned int depthCubeMapFrameBuffer = 0;
             unsigned int depthCubeMap = 0;
-            unsigned int cubeMapShaderProgram= 0;
 
+            // shader programs
+            unsigned int shaderProgram2D = 0;
+
+            unsigned int shadowMapShaderProgram = 0;
+            unsigned int spotLightShaderProgram = 0;
+
+            unsigned int cubeMapShaderProgram= 0;
             unsigned int pointLightShaderProgram = 0;
 
-            void createCollisionBoxRenderDependancies();
             void createShadowMapDependancies();
             void createShadowCubeMapDependancies();
+
+            void createCollisionBoxRenderDependancies();
+
+            void createShaderPrograms();
+            
             static void windowResizeCallback(GLFWwindow* window, int width, int height);
             static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+            static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+            static void mouseMoveCallback(GLFWwindow* window, double xpos, double ypos);
 
 
     };

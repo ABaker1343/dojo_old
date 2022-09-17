@@ -74,6 +74,17 @@ int main () {
 }
 
 void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObjectPointLightSource* light) {
+
+    static double prevMousePosx = win->MOUSE_POSITION_X;
+    static double prevMousePosy = win->MOUSE_POSITION_Y;
+    static double mouseMovementx;
+    static double mouseMovementy;
+
+    mouseMovementx = win->MOUSE_POSITION_X - prevMousePosx;
+    prevMousePosx = win->MOUSE_POSITION_X;
+    mouseMovementy = win->MOUSE_POSITION_Y - prevMousePosy;
+    prevMousePosy = win->MOUSE_POSITION_Y;
+
     if (win->KEYS[GLFW_KEY_W]){
         cam->move(
                 cam->getPos().x,
@@ -160,4 +171,15 @@ void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObjectPointL
                 light->getPos().z
                 );
     }
+
+
+    // mouse movement
+
+    if (mouseMovementx > 0 || mouseMovementx < 0) {
+        cam->rotate(mouseMovementx, glm::vec3(0.f, 1.f, 0.f));
+    }
+    if (mouseMovementy > 0 || mouseMovementy < 0) {
+        cam->rotate(-mouseMovementy, glm::vec3(1.f, 0.f, 0.f));
+    }
+
 }

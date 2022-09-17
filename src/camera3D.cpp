@@ -6,6 +6,10 @@ namespace dojo {
     Camera3D::Camera3D(float relativeViewPortX, float relativeViewPortY, float relativeViewPortW, float relativeViewPortH) {
         transform = glm::mat4(1.f);
         transform = glm::translate(transform, glm::vec3(0.f, 0.f, -30.f));
+        glm::vec3 pos = getPos();
+        transform = glm::lookAt(pos,
+                glm::vec3(pos.x, pos.y, pos.z - 1),
+                glm::vec3(0.f, 1.f, 0.f));
 
         projection = glm::perspective(
                 glm::radians(45.f),
@@ -30,7 +34,8 @@ namespace dojo {
         transform[3][0] = -x;
         transform[3][1] = -y;
         transform[3][2] = -z;
-
+        transform[3][3] = 1;
+        
         //transform = glm::lookAt(pos, target, glm::vec3(0.f, 0.f, 1.f));
         //transform = glm::translate(transform, glm::vec3(-x, -y, -z));
     }
@@ -45,6 +50,19 @@ namespace dojo {
 
     glm::mat4 Camera3D::getProjectionTransform(){
         return projection;
+    }
+
+    void Camera3D::rotate(float degrees, glm::vec3 axis) {
+        glm::vec3 pos = getPos();
+        /*transform = glm::lookAt(
+                pos,
+                glm::vec3(pos.x + glm::cos(glm::radians(degrees)) * axis.x, pos.y + glm::sin(glm::radians(degrees)) * axis.y, 0),
+                glm::vec3(0.f, 1.f, 0.f)
+                );*/
+
+        move(0.f, 0.f, 0.f);
+        transform = glm::rotate(transform, glm::radians(degrees), axis);
+        move(0 + pos.x, 0 + pos.y, 0 + pos.z);
     }
 
 }

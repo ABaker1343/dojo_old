@@ -15,7 +15,6 @@ GameObject3DTextured::GameObject3DTextured(Shape shape, std::string texturePath,
 
     createTexturedObjectBuffersWithOffsetTextures(vertexArrayObject, vertexBuffer, elementBuffer,
             vertices, textureOffset, normalOffset, elements);
-    shaderProgram = createBasicShaderProgram("texturedSpotLight.vert", "texturedSpotLight.frag");
     texture = loadTextureFromFile(texturePath.c_str());
 
     this->isClone = false;
@@ -189,7 +188,6 @@ GameObject3DTextured::GameObject3DTextured(std::string objectPath, std::string t
 
     Renderable::createTexturedObjectBuffersWithOffsetTextures(vertexArrayObject, vertexBuffer, elementBuffer,
             vertices, textureOffset, normalsOffset, elements);
-    shaderProgram = Renderable::createBasicShaderProgram("texturedSpotLight.vert", "texturedSpotLight.frag");
     texture = loadTextureFromFile(texturePath.c_str());
 
     
@@ -201,7 +199,6 @@ GameObject3DTextured::GameObject3DTextured(std::string objectPath, std::string t
 
 GameObject3DTextured::GameObject3DTextured(GameObject3DTextured *obj, glm::vec3 pos, glm::vec3 scale) : GameObject(pos, scale) {
     this->vertexArrayObject = obj->vertexArrayObject;
-    this->shaderProgram = obj->shaderProgram;
     this->texture = obj->texture;
     this->elements = obj->elements;
     this->vertices = obj->vertices;

@@ -25,14 +25,6 @@ GameObject2DSprite::GameObject2DSprite(std::string spritePath, glm::vec3 _pos, g
                 this->vertices, this->elements);
     }
 
-    if (_shaderProgram > 0) {
-        this->shaderProgram = _shaderProgram;
-    } else {
-        this->shaderProgram = Renderable::createBasicShaderProgram("basic2DVert.vert", "basic2DFrag.frag");
-    }
-
-    this->texture = Renderable::loadTextureFromFile(spritePath.c_str());
-
     flip = 0;
 
     isCopy = false;
@@ -62,12 +54,6 @@ GameObject2DSprite::GameObject2DSprite(unsigned int _texture, unsigned int _vert
                 this->vertices, this->elements);
     }
 
-    if (shaderProgram > 0) {
-        this->shaderProgram = shaderProgram;
-    } else {
-        this->shaderProgram = Renderable::createBasicShaderProgram("basic2DVert.vert", "basic2DFrag.frag");
-    }
-
     this->texture = _texture;
 
     isCopy = true;
@@ -76,7 +62,6 @@ GameObject2DSprite::GameObject2DSprite(unsigned int _texture, unsigned int _vert
 
 GameObject2DSprite::GameObject2DSprite(GameObject2DSprite* obj, glm::vec3 pos, glm::vec3 scale) : GameObject(pos, scale) {
     this->texture = obj->texture;
-    this->shaderProgram = obj->shaderProgram;
     this->vertexArrayObject = obj->vertexArrayObject;
     this->vertices = obj->vertices;
     this->elements = obj->elements;

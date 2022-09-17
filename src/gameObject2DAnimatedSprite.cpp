@@ -29,7 +29,6 @@ GameObject2DAnimatedSprite::GameObject2DAnimatedSprite(int numFrames, std::strin
 
     Renderable::createTexturedObjectBuffers(vertexArrayObject, baseAnimation.vertexBuffer, elementBuffer,
             vertices, elements);
-    shaderProgram = Renderable::createBasicShaderProgram("basic2DVert.vert", "basic2DFrag.frag");
     baseAnimation.texture = Renderable::loadTextureFromFile(animationPath.c_str());
 
     animations->insert({"default", baseAnimation});

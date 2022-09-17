@@ -2,15 +2,21 @@
 #include "headers/gameObject3DTextured.hpp"
 #include "headers/gameObjectPointLightSource.hpp"
 #include "headers/renderable.hpp"
+#include <GLFW/glfw3.h>
 #include <glm/ext/quaternion_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace dojo {
 
 bool Window::KEYS[KEYS_SIZE];
+bool Window::MOUSE_BUTTONS[MOUSE_BUTTONS_SIZE];
 int Window::winHeight, Window::winWidth;
+double Window::MOUSE_POSITION_X, Window::MOUSE_POSITION_Y;
 
 Window::Window(int width, int height, const char* name) {
+
+    // initalize glfw and the window
+
     glfwInit();
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -26,6 +32,19 @@ Window::Window(int width, int height, const char* name) {
 
     glfwMakeContextCurrent(window);
 
+    glfwSetFramebufferSizeCallback(window, windowResizeCallback);
+    glfwSetKeyCallback(window, keyCallback);
+
+    if (glfwRawMouseMotionSupported()) {
+        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    }
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
+    glfwSetMouseButtonCallback(window, mouseButtonCallback);
+    glfwSetCursorPosCallback(window, mouseMoveCallback);
+
+    //initalize opengl
+
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         throw std::runtime_error("failed to load opengl functions");
     }
@@ -38,14 +57,15 @@ Window::Window(int width, int height, const char* name) {
 
     glViewport(0, 0, width, height);
     
-    glfwSetFramebufferSizeCallback(window, windowResizeCallback);
-    glfwSetKeyCallback(window, keyCallback);
-    
+    // initialize the window class and all its parts
+
     createShadowMapDependancies();
     createShadowCubeMapDependancies();
 
     createCollisionBoxRenderDependancies();
     colliderColor = glm::vec4(0.f, 1.f, 0.f, 0.2f);
+
+    createShaderPrograms();
 
 }
 
@@ -67,12 +87,34 @@ void Window::windowResizeCallback(GLFWwindow* window, int width, int height) {
 }
 
 void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (action == GLFW_PRESS) {
-        KEYS[key] = true;
+    switch (action) {
+        case GLFW_PRESS:
+            KEYS[key] = true;
+            break;
+        case GLFW_RELEASE:
+            KEYS[key] = false;
+            break;
+        default:
+            break;
     }
-    if (action == GLFW_RELEASE) {
-        KEYS[key] = false;
+}
+
+void Window::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    switch(action) {
+        case GLFW_PRESS:
+            MOUSE_BUTTONS[button] = true;
+            break;
+        case GLFW_RELEASE:
+            MOUSE_BUTTONS[button] = false;
+            break;
+        default:
+            break;
     }
+}
+
+void Window::mouseMoveCallback(GLFWwindow* window, double xpos, double ypos) {
+    MOUSE_POSITION_X = xpos;
+    MOUSE_POSITION_Y = ypos;
 }
 
 bool Window::isAlive() {
@@ -92,27 +134,27 @@ void Window::clear() {
 
 void Window::render(Camera3D *c, GameObject2DSprite *s) {
     glViewport(c->viewport.x * winWidth, c->viewport.y * winHeight, c->viewport.w * winWidth, c->viewport.h * winHeight);
-    glUseProgram(s->shaderProgram);
+    glUseProgram(shaderProgram2D);
     glBindVertexArray(s->vertexArrayObject);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, s->texture);
 
-    int flipUniformPos = glGetUniformLocation(s->shaderProgram, "flip");
+    int flipUniformPos = glGetUniformLocation(shaderProgram2D, "flip");
     glUniform1i(flipUniformPos, s->flip);
 
-    int objectTransformLocation = glGetUniformLocation(s->shaderProgram, "objectTransform");
-    int viewTransformLocation = glGetUniformLocation(s->shaderProgram, "viewTransform");
-    int projectionTransformLocation = glGetUniformLocation(s->shaderProgram, "projection");
+    int objectTransformLocation = glGetUniformLocation(shaderProgram2D, "objectTransform");
+    int viewTransformLocation = glGetUniformLocation(shaderProgram2D, "viewTransform");
+    int projectionTransformLocation = glGetUniformLocation(shaderProgram2D, "projection");
 
     glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(s->transform));
     glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
     glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
 
-    int animationFrameUniformLocation = glGetUniformLocation(s->shaderProgram, "animationFrame");
+    int animationFrameUniformLocation = glGetUniformLocation(shaderProgram2D, "animationFrame");
     glUniform1i(animationFrameUniformLocation, 0);
 
-    int animationChunkSizeUniformLocation = glGetUniformLocation(s->shaderProgram, "animationChunkSize");
+    int animationChunkSizeUniformLocation = glGetUniformLocation(shaderProgram2D, "animationChunkSize");
     glUniform1f(animationChunkSizeUniformLocation, 1.f);
 
     glDrawElements(GL_TRIANGLES, s->numElements(), GL_UNSIGNED_INT, 0);
@@ -121,27 +163,27 @@ void Window::render(Camera3D *c, GameObject2DSprite *s) {
 
 void Window::render(Camera3D *c, GameObject2DAnimatedSprite *s) {
     glViewport(c->viewport.x * winWidth, c->viewport.y * winHeight, c->viewport.w * winWidth, c->viewport.h * winHeight);
-    glUseProgram(s->shaderProgram);
+    glUseProgram(shaderProgram2D);
     glBindVertexArray(s->vertexArrayObject);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, s->currentTexture());
 
-    int flipUniformPos = glGetUniformLocation(s->shaderProgram, "flip");
+    int flipUniformPos = glGetUniformLocation(shaderProgram2D, "flip");
     glUniform1i(flipUniformPos, s->flip);
 
-    int objectTransformLocation = glGetUniformLocation(s->shaderProgram, "objectTransform");
-    int viewTransformLocation = glGetUniformLocation(s->shaderProgram, "viewTransform");
-    int projectionTransformLocation = glGetUniformLocation(s->shaderProgram, "projection");
+    int objectTransformLocation = glGetUniformLocation(shaderProgram2D, "objectTransform");
+    int viewTransformLocation = glGetUniformLocation(shaderProgram2D, "viewTransform");
+    int projectionTransformLocation = glGetUniformLocation(shaderProgram2D, "projection");
 
     glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(s->transform));
     glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
     glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
 
-    int animationFrameUniformLocation = glGetUniformLocation(s->shaderProgram, "animationFrame");
+    int animationFrameUniformLocation = glGetUniformLocation(shaderProgram2D, "animationFrame");
     glUniform1i(animationFrameUniformLocation, s->currentFrame());
 
-    int animationChunkSizeUniformLocation = glGetUniformLocation(s->shaderProgram, "animationChunkSize");
+    int animationChunkSizeUniformLocation = glGetUniformLocation(shaderProgram2D, "animationChunkSize");
     glUniform1f(animationChunkSizeUniformLocation, s->currentAnimationChunkSize());
 
     glDrawElements(GL_TRIANGLES, s->numElements(), GL_UNSIGNED_INT, 0);
@@ -149,38 +191,38 @@ void Window::render(Camera3D *c, GameObject2DAnimatedSprite *s) {
 
 void Window::render(Camera3D *c, GameObject3DTextured *obj, GameObjectSpotLightSource *light) {
     glViewport(c->viewport.x * winWidth, c->viewport.y * winHeight, c->viewport.w * winWidth, c->viewport.h * winHeight);
-    glUseProgram(obj->shaderProgram);
+    glUseProgram(spotLightShaderProgram);
     glBindVertexArray(obj->vertexArrayObject);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, obj->texture);
-    int objectTextureLocation = glGetUniformLocation(obj->shaderProgram, "inTexture");
+    int objectTextureLocation = glGetUniformLocation(spotLightShaderProgram, "inTexture");
     glUniform1i(objectTextureLocation, 0);
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depthMap);
-    int depthMapTextureLocation = glGetUniformLocation(obj->shaderProgram, "inDepthMap");
+    int depthMapTextureLocation = glGetUniformLocation(spotLightShaderProgram, "inDepthMap");
     glUniform1i(depthMapTextureLocation, 1);
 
-    int flipUniformPos = glGetUniformLocation(obj->shaderProgram, "flip");
+    int flipUniformPos = glGetUniformLocation(spotLightShaderProgram, "flip");
     glUniform1i(flipUniformPos, obj->flip);
 
-    int objectTransformLocation = glGetUniformLocation(obj->shaderProgram, "objectTransform");
-    int viewTransformLocation = glGetUniformLocation(obj->shaderProgram, "viewTransform");
-    int projectionTransformLocation = glGetUniformLocation(obj->shaderProgram, "projection");
+    int objectTransformLocation = glGetUniformLocation(spotLightShaderProgram, "objectTransform");
+    int viewTransformLocation = glGetUniformLocation(spotLightShaderProgram, "viewTransform");
+    int projectionTransformLocation = glGetUniformLocation(spotLightShaderProgram, "projection");
 
     glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(obj->transform));
     glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->getTransform()));
     glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->getProjectionTransform()));
 
-    int animationFrameUniformLocation = glGetUniformLocation(obj->shaderProgram, "animationFrame");
-    int animationChunkSizeUniformLocation = glGetUniformLocation(obj->shaderProgram, "animationChunkSize");
+    int animationFrameUniformLocation = glGetUniformLocation(spotLightShaderProgram, "animationFrame");
+    int animationChunkSizeUniformLocation = glGetUniformLocation(spotLightShaderProgram, "animationChunkSize");
 
-    int lightColorLocation = glGetUniformLocation(obj->shaderProgram, "lightColor");
-    int lightPosLocation = glGetUniformLocation(obj->shaderProgram, "lightPos");
+    int lightColorLocation = glGetUniformLocation(spotLightShaderProgram, "lightColor");
+    int lightPosLocation = glGetUniformLocation(spotLightShaderProgram, "lightPos");
 
-    int lightViewTransformLocation = glGetUniformLocation(obj->shaderProgram, "lightViewTransform");
-    int lightProjectionTransformLocation = glGetUniformLocation(obj->shaderProgram, "lightProjectionTransform");
+    int lightViewTransformLocation = glGetUniformLocation(spotLightShaderProgram, "lightViewTransform");
+    int lightProjectionTransformLocation = glGetUniformLocation(spotLightShaderProgram, "lightProjectionTransform");
 
     glUniform1i(animationFrameUniformLocation, 0);
     glUniform1f(animationChunkSizeUniformLocation, 1.f);
@@ -329,7 +371,6 @@ void Window::createCollisionBoxRenderDependancies() {
 
     // create shaders
 
-    collisionBoxShaderProgram = Renderable::createBasicShaderProgram("basicSolidColorVert.vert", "basicSolidColorFrag.frag");
 
 }
 
@@ -357,7 +398,6 @@ void Window::createShadowMapDependancies() {
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    shadowMapShaderProgram = Renderable::createBasicShaderProgram("shadowVert.vert", "emptyFrag.frag");
 }
 
 void Window::createShadowCubeMapDependancies() {
@@ -386,9 +426,22 @@ void Window::createShadowCubeMapDependancies() {
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    cubeMapShaderProgram = Renderable::createBasicShaderProgramWithGeometry("cubeMapShader.vert", "cubeMapShader.geom", "cubeMapShader.frag");
-    pointLightShaderProgram = Renderable::createBasicShaderProgram("texturedPointLight.vert", "texturedPointLight.frag");
 
+}
+
+void Window::createShaderPrograms() {
+    // create shaders for 2D gameObjects
+    shaderProgram2D = Renderable::createBasicShaderProgram("basic2DVert.vert", "basic2DFrag.frag");
+    collisionBoxShaderProgram = Renderable::createBasicShaderProgram("basicSolidColorVert.vert", "basicSolidColorFrag.frag");
+    collisionBoxShaderProgram = Renderable::createBasicShaderProgram("basicSolidColorVert.vert", "basicSolidColorFrag.frag");
+
+    // create shader programs that will render to framebuffers for depth mapping
+    shadowMapShaderProgram = Renderable::createBasicShaderProgram("shadowVert.vert", "emptyFrag.frag");
+    cubeMapShaderProgram = Renderable::createBasicShaderProgramWithGeometry("cubeMapShader.vert", "cubeMapShader.geom", "cubeMapShader.frag");
+
+    // create shader programs that will render with a light
+    pointLightShaderProgram = Renderable::createBasicShaderProgram("texturedPointLight.vert", "texturedPointLight.frag");
+    spotLightShaderProgram = Renderable::createBasicShaderProgram("texturedSpotLight.vert", "texturedSpotLight.frag");
 }
 
 void Window::renderShadows(GameObject3DTextured *obj, GameObjectSpotLightSource *light) {
