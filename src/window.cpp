@@ -150,7 +150,7 @@ void Window::render(Camera3D *c, GameObject2DSprite *s) {
     int projectionTransformLocation = glGetUniformLocation(shaderProgram2D, "projection");
 
     glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(s->transform));
-    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
+    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->getTransform()));
     glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
 
     int animationFrameUniformLocation = glGetUniformLocation(shaderProgram2D, "animationFrame");
@@ -179,7 +179,7 @@ void Window::render(Camera3D *c, GameObject2DAnimatedSprite *s) {
     int projectionTransformLocation = glGetUniformLocation(shaderProgram2D, "projection");
 
     glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(s->transform));
-    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
+    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->getTransform()));
     glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
 
     int animationFrameUniformLocation = glGetUniformLocation(shaderProgram2D, "animationFrame");
@@ -295,7 +295,7 @@ void Window::render(Camera3D *c, GameObject2DCollisionBox *b) {
     int colorUniformLocation = glGetUniformLocation(collisionBoxShaderProgram, "inColor");
 
     glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(b->getTransform()));
-    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->transform));
+    glUniformMatrix4fv(viewTransformLocation, 1, GL_FALSE, glm::value_ptr(c->getTransform()));
     glUniformMatrix4fv(projectionTransformLocation, 1, GL_FALSE, glm::value_ptr(c->projection));
     glUniform4fv(colorUniformLocation, 1, glm::value_ptr(colliderColor));
 

@@ -51,11 +51,8 @@ namespace dojo {
         float rotx = degrees * axis.y;
         float roty = degrees * axis.x;
         float rotz = degrees * axis.z;
-        cameraFront = glm::normalize(glm::vec3(
-                cameraFront.x + rotx,
-                cameraFront.y + roty,
-                cameraFront.z + rotz
-                ));
+
+        cameraFront = glm::rotate(cameraFront, glm::radians(degrees), axis);
     }
 
     glm::mat4 Camera3D::getTransform() {

@@ -29,12 +29,18 @@ int main () {
     objects->push_back(object);
 
     for (int i = 0; i < 500; i++) {
-        objects->push_back(dojo::GameObject3DTextured(object, 
+        auto newObj = dojo::GameObject3DTextured(object, 
                     glm::vec3(
                         (rand() % 51) - 25,
                         (rand() % 26),
                         (rand() % 51) - 25
-                        )));
+                        ));
+
+        float x = (float)(rand() % 10) / 100;
+        float y = (float)(rand() % 10) / 100;
+        float z = (float)(rand() % 10) / 100;
+        newObj.rotate((float)(rand() % 90), glm::vec3(x, y, z));
+        objects->push_back(newObj);
     }
 
     while (window->isAlive()) {
@@ -172,10 +178,10 @@ void handleInputs(dojo::Window* win, dojo::Camera3D* cam, dojo::GameObjectPointL
     // mouse movement
 
     if (mouseMovementx > 0 || mouseMovementx < 0) {
-        cam->rotate(mouseMovementx * 0.01, glm::vec3(0.f, 1.f, 0.f));
+        cam->rotate(-mouseMovementx, glm::vec3(0.f, 1.f, 0.f));
     }
     if (mouseMovementy > 0 || mouseMovementy < 0) {
-        cam->rotate(-mouseMovementy * 0.01, glm::vec3(1.f, 0.f, 0.f));
+        cam->rotate(-mouseMovementy, glm::vec3(1.f, 0.f, 0.f));
     }
 
 }
