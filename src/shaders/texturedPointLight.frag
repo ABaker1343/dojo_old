@@ -14,13 +14,15 @@ uniform samplerCube inDepthMap;
 uniform vec3 lightPos;
 uniform vec3 lightColor;
 
+uniform float farPlane;
+
 uniform int flip;
 
 float ShadowCalculation(vec3 fragPos) {
     vec3 fragToLight = fragPos - lightPos;
     float closestDepth = texture(inDepthMap, fragToLight).r;
     
-    closestDepth *= 50;
+    closestDepth *= farPlane;
     float currentDepth = length(fragToLight);
 
     float bias = 0.05;

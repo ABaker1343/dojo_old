@@ -23,6 +23,8 @@ int main () {
     //auto *light = new dojo::GameObjectSpotLightSource(glm::vec3(0.f, 0.f, 0.f));
     auto floor = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "texture.png",
             glm::vec3(0.f, -6.f, 0.f), glm::vec3(100.f, 1.f, 100.f));
+    auto *backwall = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "texture.png",
+            glm::vec3(0.f, 44.f, -50.f), glm::vec3(100.f, 100.f, 1.f));
 
 
     std::vector<dojo::GameObject3DTextured> *objects = new std::vector<dojo::GameObject3DTextured>();
@@ -49,6 +51,7 @@ int main () {
         }
 
         window->renderShadows(floor, light);
+        window->renderShadows(backwall, light);
 
         for (auto& o : *objects){
             window->render(camera3, &o, light);
@@ -56,6 +59,7 @@ int main () {
         
         //window->render(camera3, object, light);
         window->render(camera3, floor, light);
+        window->render(camera3, backwall, light);
         window->render(camera3, light);
     }
 

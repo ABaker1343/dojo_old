@@ -13,6 +13,8 @@ public:
     ~GameObjectPointLightSource();
 
     glm::vec3 lightColor;
+    float farPlane;
+    float nearPlane;
 
     std::vector<glm::mat4> *lightViewTransforms;
     glm::mat4 lightProjectionTransform;

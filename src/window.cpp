@@ -226,12 +226,14 @@ void Window::render(Camera3D *c, GameObject3DTextured *obj, GameObjectPointLight
 
     int lightColorLocation = glGetUniformLocation(pointLightShaderProgram, "lightColor");
     int lightPosLocation = glGetUniformLocation(pointLightShaderProgram, "lightPos");
+    int farPlaneLocation = glGetUniformLocation(pointLightShaderProgram, "farPlane");
 
     glUniform1i(animationFrameUniformLocation, 0);
     glUniform1f(animationChunkSizeUniformLocation, 1.f);
 
     glUniform3fv(lightColorLocation, 1, glm::value_ptr(light->lightColor));
     glUniform3fv(lightPosLocation, 1, glm::value_ptr(light->getPos()));
+    glUniform1f(farPlaneLocation, light->farPlane);
 
     glDrawArrays(GL_TRIANGLES, 0, obj->numVertices());
 
@@ -384,7 +386,7 @@ void Window::createShadowCubeMapDependancies() {
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    cubeMapShaderProgram = Renderable::createBasicShaderProgramWithGeometry("cubeMapShader.vert", "cubeMapShader.geom", "emptyFrag.frag");
+    cubeMapShaderProgram = Renderable::createBasicShaderProgramWithGeometry("cubeMapShader.vert", "cubeMapShader.geom", "cubeMapShader.frag");
     pointLightShaderProgram = Renderable::createBasicShaderProgram("texturedPointLight.vert", "texturedPointLight.frag");
 
 }
@@ -424,10 +426,12 @@ void Window::renderShadows(GameObject3DTextured* obj, GameObjectPointLightSource
     int objectTransformLocation = glGetUniformLocation(cubeMapShaderProgram, "objectTransform");
     int lightViewTransformsLocation = glGetUniformLocation(cubeMapShaderProgram, "lightViewTransforms");
     int lightProjectionTransformLocation = glGetUniformLocation(cubeMapShaderProgram, "lightProjectionTransform");
+    int farPlaneLocation = glGetUniformLocation(cubeMapShaderProgram, "farPlane");
 
     glUniformMatrix4fv(objectTransformLocation, 1, GL_FALSE, glm::value_ptr(obj->getTransform()));
     glUniformMatrix4fv(lightViewTransformsLocation, 6, GL_FALSE, glm::value_ptr(light->getViewTransforms()[0]));
     glUniformMatrix4fv(lightProjectionTransformLocation, 1, GL_FALSE, glm::value_ptr(light->getProjectionTransform()));
+    glUniform1f(farPlaneLocation, light->farPlane);
 
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, depthCubeMapFrameBuffer);
