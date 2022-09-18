@@ -5,3 +5,6 @@ makima.jpg
 texture.png
 tokyoGhoulTouka.jpg
 src/*.o
+src/.cache/
+src/gameObjects/*.o
+src/menuItems/*.o
