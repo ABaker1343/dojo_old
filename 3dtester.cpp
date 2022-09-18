@@ -1,7 +1,4 @@
-#include "src/headers/camera3D.hpp"
 #include "src/headers/dojo.hpp"
-#include "src/headers/gameObject3DTextured.hpp"
-#include "src/headers/window.hpp"
 
 void handleInputs(dojo::Window*, dojo::Camera3D*, dojo::GameObject*);
 

@@ -1,7 +1,7 @@
 #ifndef __HEADER_GAME_OBJECT_SPOT_LIGHT_SOURCE
 #define __HEADER_GAME_OBJECT_SPOT_LIGHT_SOURCE
 
-#include "renderable.hpp"
+#include "../../headers/renderable.hpp"
 #include "gameObject.hpp"
 
 namespace dojo {

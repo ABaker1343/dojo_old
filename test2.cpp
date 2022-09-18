@@ -1,7 +1,4 @@
-#include "src/headers/camera3D.hpp"
 #include "src/headers/dojo.hpp"
-#include "src/headers/gameObject2DCollisionBox.hpp"
-#include "src/headers/window.hpp"
 
 void handleInput(dojo::Window*, dojo::GameObject*, dojo::GameObject2DCollisionBox*);
 

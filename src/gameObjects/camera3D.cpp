@@ -48,10 +48,6 @@ namespace dojo {
     }
 
     void Camera3D::rotate(float degrees, glm::vec3 axis) {
-        float rotx = degrees * axis.y;
-        float roty = degrees * axis.x;
-        float rotz = degrees * axis.z;
-
         cameraFront = glm::rotate(cameraFront, glm::radians(degrees), axis);
     }
 

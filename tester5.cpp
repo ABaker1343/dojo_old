@@ -1,9 +1,4 @@
-#include "src/headers/camera3D.hpp"
 #include "src/headers/dojo.hpp"
-#include "src/headers/gameObject3DTextured.hpp"
-#include "src/headers/gameObjectSpotLightSource.hpp"
-#include "src/headers/window.hpp"
-#include <GLFW/glfw3.h>
 
 void handleInputs(dojo::Window*, dojo::Camera3D*, dojo::GameObjectPointLightSource*);
 

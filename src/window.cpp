@@ -1,10 +1,4 @@
 #include "headers/window.hpp"
-#include "headers/gameObject3DTextured.hpp"
-#include "headers/gameObjectPointLightSource.hpp"
-#include "headers/renderable.hpp"
-#include <GLFW/glfw3.h>
-#include <glm/ext/quaternion_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 namespace dojo {
 

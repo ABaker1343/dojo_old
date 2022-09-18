@@ -4,12 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "src/headers/camera2D.hpp"
 #include "src/headers/dojo.hpp"
-#include "src/headers/gameObject2DAnimatedSprite.hpp"
-#include "src/headers/gameObject.hpp"
-#include "src/headers/gameObject2DSprite.hpp"
-#include "src/headers/window.hpp"
 
 typedef struct INPUT_HANDLER_INPUTS {
     dojo::Window* window;

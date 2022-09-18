@@ -2,7 +2,7 @@
 #define __HEADER_GAME_OBJECT_2D_ANIMATED_SPRITE
 
 #include "gameObject.hpp"
-#include "renderable.hpp"
+#include "../../headers/renderable.hpp"
 
 #include <string>
 #include <unordered_map>

@@ -2,7 +2,7 @@
 #define __HEADER_GAME_OBJECT_2D_SPRITE
 
 #include "gameObject.hpp"
-#include "renderable.hpp"
+#include "../../headers/renderable.hpp"
 
 namespace dojo {
 

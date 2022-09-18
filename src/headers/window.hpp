@@ -5,18 +5,18 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/ext/quaternion_transform.hpp>
 
 #include <stdexcept>
 
-#include "camera2D.hpp"
-#include "camera3D.hpp"
-#include "gameObject2DSprite.hpp"
-#include "gameObject2DAnimatedSprite.hpp"
-#include "gameObject2DCollisionBox.hpp"
+#include "../gameObjects/headers/camera3D.hpp"
+#include "../gameObjects/headers/gameObject2DSprite.hpp"
+#include "../gameObjects/headers/gameObject2DAnimatedSprite.hpp"
+#include "../gameObjects/headers/gameObject2DCollisionBox.hpp"
 #include "renderable.hpp"
-#include "gameObject3DTextured.hpp"
-#include "gameObjectSpotLightSource.hpp"
-#include "gameObjectPointLightSource.hpp"
+#include "../gameObjects/headers/gameObject3DTextured.hpp"
+#include "../gameObjects/headers/gameObjectSpotLightSource.hpp"
+#include "../gameObjects/headers/gameObjectPointLightSource.hpp"
 
 #define KEYS_SIZE 349
 #define MOUSE_BUTTONS_SIZE 8

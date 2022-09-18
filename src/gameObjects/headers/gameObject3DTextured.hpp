@@ -2,7 +2,7 @@
 #define __HEADER_GAME_OBJECT_3D_GENERIC_TEXTURED_OBJECT
 
 #include "gameObject.hpp"
-#include "renderable.hpp"
+#include "../../headers/renderable.hpp"
 
 namespace dojo {
 

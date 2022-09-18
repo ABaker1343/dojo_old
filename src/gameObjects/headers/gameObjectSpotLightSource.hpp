@@ -2,7 +2,7 @@
 #define __HEADER_GAME_OBJECT_LIGHT_SOURCE
 
 #include "gameObject.hpp"
-#include "renderable.hpp"
+#include "../../headers/renderable.hpp"
 
 namespace dojo {
 
