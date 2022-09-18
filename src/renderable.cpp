@@ -223,6 +223,19 @@ unsigned int Renderable::createVertexBuffer(std::vector<float> *vertices) {
     return newBuffer;
 }
 
+unsigned int Renderable::createElementBuffer(std::vector<unsigned int> *elements) {
+    glBindVertexArray(0);
+    unsigned int newBuffer;
+    glGenBuffers(1, &newBuffer);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, newBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * elements->size(), elements->data(), GL_STATIC_DRAW);
+
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    return newBuffer;
+}
+
 int Renderable::numElements() {
     return elements->size();
 }

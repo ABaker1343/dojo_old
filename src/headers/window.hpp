@@ -7,16 +7,22 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/ext/quaternion_transform.hpp>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #include <stdexcept>
+#include <map>
+
+#include "renderable.hpp"
 
 #include "../gameObjects/headers/camera3D.hpp"
 #include "../gameObjects/headers/gameObject2DSprite.hpp"
 #include "../gameObjects/headers/gameObject2DAnimatedSprite.hpp"
 #include "../gameObjects/headers/gameObject2DCollisionBox.hpp"
-#include "renderable.hpp"
 #include "../gameObjects/headers/gameObject3DTextured.hpp"
 #include "../gameObjects/headers/gameObjectSpotLightSource.hpp"
 #include "../gameObjects/headers/gameObjectPointLightSource.hpp"
+
+#include "../menuItems/headers/menuItem.hpp"
 
 #define KEYS_SIZE 349
 #define MOUSE_BUTTONS_SIZE 8
@@ -24,6 +30,15 @@
 namespace dojo {
     class Window {
         public:
+
+            struct Character {
+                unsigned int texture;
+                glm::ivec2 size;
+                glm::ivec2 bearing;
+                //unsigned int advance;
+                long advance;
+            };
+
             Window(int width, int height, const char* name);
             ~Window();
 
@@ -35,10 +50,13 @@ namespace dojo {
             static double MOUSE_POSITION_X;
             static double MOUSE_POSITION_Y;
 
-            void clear();
-            void clearShadow();
             bool isAlive();
             void setKill();
+            void showPointer();
+            void hidePointer();
+
+            void clear();
+            void clearShadow();
 
             void render(Camera3D *c, GameObject2DSprite *s);
             void render(Camera3D *c, GameObject2DAnimatedSprite *s);
@@ -47,6 +65,8 @@ namespace dojo {
             void render(Camera3D *c, GameObject3DTextured *cube, GameObjectPointLightSource *light);
             void render(Camera3D *c, GameObjectSpotLightSource *light);
             void render(Camera3D *c, GameObjectPointLightSource *light);
+
+            void render(MenuItem *item);
 
             void renderShadows(GameObject3DTextured *obj, GameObjectSpotLightSource *light);
             void renderShadows(GameObject3DTextured *obj, GameObjectPointLightSource *light);
@@ -60,6 +80,8 @@ namespace dojo {
             std::vector<float> *boxVertices;
             std::vector<unsigned int> *boxElements;
             glm::vec4 colliderColor;
+
+            std::map<char, Character> *characters;
 
             const unsigned int SHADOW_HEIGHT = 1024, SHADOW_WIDTH = 1024;
 
@@ -78,13 +100,17 @@ namespace dojo {
             unsigned int cubeMapShaderProgram= 0;
             unsigned int pointLightShaderProgram = 0;
 
+            unsigned int menuItemShaderProgram = 0;
+
+            // methods
+            
             void createShadowMapDependancies();
             void createShadowCubeMapDependancies();
 
             void createCollisionBoxRenderDependancies();
 
             void createShaderPrograms();
-            
+
             static void windowResizeCallback(GLFWwindow* window, int width, int height);
             static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
             static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);

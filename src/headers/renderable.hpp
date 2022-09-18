@@ -12,7 +12,7 @@
 namespace dojo {
 class Renderable {
     public:
-        unsigned int vertexArrayObject;
+        unsigned int vertexArrayObject = 0;
 
         int numElements();
         int numVertices();
@@ -23,6 +23,7 @@ class Renderable {
                 std::vector<float> *vertices, unsigned int textureOffset, unsigned int normalsOffset, std::vector<unsigned int> *elements);
 
         static unsigned int createVertexBuffer(std::vector<float> *vertices);
+        static unsigned int createElementBuffer(std::vector<unsigned int> *elements);
 
         static unsigned int createBasicShaderProgram(std::string vertexShaderPath, std::string fragmentShaderPath);
         static unsigned int createBasicShaderProgramWithGeometry(std::string vertexShaderPath, std::string GeometryShaderPath, std::string fragmentShaderPath);
@@ -30,8 +31,8 @@ class Renderable {
         static unsigned int loadTextureFromFile(const char* filepath);
 
     protected:
-        unsigned int vertexBuffer;
-        unsigned int elementBuffer;
+        unsigned int vertexBuffer = 0;
+        unsigned int elementBuffer = 0;
 
         int vertexCount;
         std::vector<float> *vertices;

@@ -38,6 +38,8 @@ int main () {
         objects->push_back(newObj);
     }
 
+    window->hidePointer();
+
     while (window->isAlive()) {
         window->clear();
         window->clearShadow();

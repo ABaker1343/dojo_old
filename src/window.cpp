@@ -1,4 +1,6 @@
 #include "headers/window.hpp"
+#include "freetype/freetype.h"
+#include <GLFW/glfw3.h>
 
 namespace dojo {
 
@@ -32,7 +34,7 @@ Window::Window(int width, int height, const char* name) {
     if (glfwRawMouseMotionSupported()) {
         glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
     }
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
     glfwSetCursorPosCallback(window, mouseMoveCallback);
@@ -51,6 +53,73 @@ Window::Window(int width, int height, const char* name) {
 
     glViewport(0, 0, width, height);
     
+    // initialize true type
+    
+    FT_Library freetype;
+    if (FT_Init_FreeType(&freetype) != 0) {
+        throw std::runtime_error("failed to initialize freetype font rendering library");
+    }
+
+    FT_Face ftArial;
+    if (FT_New_Face(freetype, "fonts/arial.ttf", 0, &ftArial) != 0) {
+        throw std::runtime_error("failed to load arial font");
+    }
+
+    FT_Set_Pixel_Sizes(ftArial, 0, 48);
+
+    // create the fonts
+    
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    characters = new std::map<char, Character>();
+
+    for (unsigned char c = 0; c < 128; c++){
+        
+        // load the characters glyph
+        if (FT_Load_Char(ftArial, c, FT_LOAD_RENDER) != 0) {
+            std::cout << "failed to load character " << c << " in font arial" << std::endl;
+            throw std::runtime_error("failed to load character in font");
+        }
+
+        //generate the texture for the font
+        
+        unsigned int glyphTexture = 0;
+        glGenTextures(1, &glyphTexture);
+        glBindTexture(GL_TEXTURE_2D, glyphTexture);
+
+        glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                GL_RED, // one byte
+                ftArial->glyph->bitmap.width,
+                ftArial->glyph->bitmap.rows,
+                0,
+                GL_RED, // one byte
+                GL_UNSIGNED_BYTE,
+                ftArial->glyph->bitmap.buffer
+            );
+
+        // set the texture options
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // create the character
+
+        Character character = {
+            glyphTexture,
+            glm::ivec2(ftArial->glyph->bitmap.width, ftArial->glyph->bitmap.rows),
+            glm::ivec2(ftArial->glyph->bitmap_left, ftArial->glyph->bitmap_top),
+            ftArial->glyph->advance.x
+        };
+
+        characters->insert(std::pair<char, Character>(c, character));
+    }
+
+    FT_Done_Face(ftArial);
+    FT_Done_FreeType(freetype);
+
     // initialize the window class and all its parts
 
     createShadowMapDependancies();
@@ -117,6 +186,14 @@ bool Window::isAlive() {
 
 void Window::setKill() {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
+
+void Window::showPointer() {
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+void Window::hidePointer() {
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Window::clear() {
@@ -335,6 +412,29 @@ void Window::render(Camera3D *c, GameObjectPointLightSource *light) {
     glDrawElements(GL_TRIANGLES, boxElements->size(), GL_UNSIGNED_INT, 0);
 }
 
+void Window::render(MenuItem* item) {
+    glViewport(0, 0, winWidth, winHeight);
+    glUseProgram(menuItemShaderProgram);
+    glBindVertexArray(item->vertexArrayObject);
+
+    int screenPosLocation = glGetUniformLocation(menuItemShaderProgram, "screenPos");
+    int backgroundColorLocation = glGetUniformLocation(menuItemShaderProgram, "backgroundColor");
+
+    glm::vec2 screenPos = glm::vec2(item->screenPos.x, item->screenPos.y);
+    glUniform2fv(screenPosLocation, 1, glm::value_ptr(screenPos));
+    glUniform3fv(backgroundColorLocation, 1, glm::value_ptr(item->backgroundColor));
+
+    glDrawElements(GL_TRIANGLES, item->numElements(), GL_UNSIGNED_INT, 0);
+
+    // then we have to render some text on top of the box so that the item is complete
+    // this might be doable with the same shader program
+    // maybe you can combine all the text into one texture using a framebuffer
+    // then you can pass that texture into the menuitem shader program
+    // and render it using the item and some texture coords
+    
+
+}
+
 void Window::createCollisionBoxRenderDependancies() {
     // create the buffers
 
@@ -429,6 +529,8 @@ void Window::createShaderPrograms() {
     // create shaders for 2D gameObjects
     shaderProgram2D = Renderable::createBasicShaderProgram("basic2DVert.vert", "basic2DFrag.frag");
     collisionBoxShaderProgram = Renderable::createBasicShaderProgram("basicSolidColorVert.vert", "basicSolidColorFrag.frag");
+
+    menuItemShaderProgram = Renderable::createBasicShaderProgram("menuItem.vert", "menuItem.frag");
 
     // create shader programs that will render to framebuffers for depth mapping
     shadowMapShaderProgram = Renderable::createBasicShaderProgram("shadowVert.vert", "emptyFrag.frag");

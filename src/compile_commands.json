@@ -1,0 +1,24 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-fPIC",
+      "-c",
+      "-Wall",
+      "-I.",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-I/usr/include/harfbuzz",
+      "-I/usr/include/glib-2.0",
+      "-I/usr/lib/glib-2.0/include",
+      "-I/usr/include/sysprof-4",
+      "-pthread",
+      "-o",
+      "window.o",
+      "window.cpp"
+    ],
+    "directory": "/bigboi/code/dojo/src",
+    "file": "/bigboi/code/dojo/src/window.cpp",
+    "output": "/bigboi/code/dojo/src/window.o"
+  }
+]
