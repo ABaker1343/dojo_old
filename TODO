@@ -1,5 +1,24 @@
-camera movement/pointing
+camera movement/pointing:
+    camera works when looking forward
+    have to make sure that you can turn around and still have it be okay
+
 mouse controls
+    refine mouse controls
+
 menu items
+    menu items
+    this should include buttons that maybe the user can attach callbacks to?
+
 text rendering
+    make text rendering possible in both screen and world space
+
+multiple lights:
+    add support for multiple lights
+    had an idea to create and compile shaders Just In Time for an arbitraty amount of lights
+    better if i dont have to do that though,
+
+transparency in textures
+    add support for transparent textures
+
 redering to texture for things like reflection
+    bit of a stretch right now

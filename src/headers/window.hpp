@@ -73,12 +73,13 @@ namespace dojo {
 
         private:
             GLFWwindow* window;
-            unsigned int collisionBoxShaderProgram;
-            unsigned int collisionBoxVertexArray;
-            unsigned int collisionBoxVertexBuffer;
             unsigned int boxElementBuffer;
+
             std::vector<float> *boxVertices;
             std::vector<unsigned int> *boxElements;
+            std::vector<float> *textVertices;
+            glm::vec3 textColor;
+
             glm::vec4 colliderColor;
 
             std::map<char, Character> *characters;
@@ -91,8 +92,18 @@ namespace dojo {
             unsigned int depthCubeMapFrameBuffer = 0;
             unsigned int depthCubeMap = 0;
 
+            // vertex Array Objects
+            unsigned int collisionBoxVertexArray;
+            unsigned int textVertexArray;
+
+            // vertexBuffers
+            unsigned int collisionBoxVertexBuffer = 0;
+            unsigned int textVertexBuffer = 0;
+
             // shader programs
             unsigned int shaderProgram2D = 0;
+            unsigned int collisionBoxShaderProgram;
+            unsigned int textShaderProgram = 0;
 
             unsigned int shadowMapShaderProgram = 0;
             unsigned int spotLightShaderProgram = 0;

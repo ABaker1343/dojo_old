@@ -8,14 +8,22 @@ int main () {
     FileHandler::shaderPath = "src/shaders/";
 
     auto window = new Window(100, 100, "menuWindow");
-    auto menuItem = new MenuItem(glm::vec4(0.25f, 0.5f, 0.5f, 0.25f), glm::vec3(0.5, 0.5, 0.5), "niceone");
+    auto menuItem = new MenuItem("menu Item", glm::vec4(0.25, 0.7, 0.5, 0.15), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(0.f, 0.f, 0.f));
+    auto menuItem2 = new MenuItem("and another one", glm::vec4(0.25, 0.5, 0.5, 0.15), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(0.f, 0.f, 0.f));
+    auto menuItem3 = new MenuItem("and yet another one but this one has quite a long text ontop of it which means that we might have to use more than one line", glm::vec4(0.25, 0.3, 0.5, 0.15), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(0.f, 0.f, 0.f));
     auto camera = new Camera3D();
     auto light = new GameObjectSpotLightSource(glm::vec3(0.f,0.f,0.f));
     auto cube = new GameObject3DTextured(GameObject3DTextured::Shape::cube, "texture.png");
+    cube->move(0.f, -10.f, 5.f);
 
     while (window->isAlive()) {
         window->clear();
+
+        cube->rotate(1.f, glm::vec3(1.f, 1.f, 1.f));
+
         window->render(menuItem);
+        window->render(menuItem2);
+        window->render(menuItem3);
         window->render(camera, cube, light);
     }
 

@@ -120,6 +120,27 @@ Window::Window(int width, int height, const char* name) {
     FT_Done_Face(ftArial);
     FT_Done_FreeType(freetype);
 
+    textVertices = new std::vector<float> {
+        0.f, 0.f, 0.f, 1.f,
+        0.f, 0.f, 0.f, 0.f,
+        0.f, 0.f, 1.f, 0.f,
+        0.f, 0.f, 1.f, 0.f,
+        0.f, 0.f, 1.f, 1.f,
+        0.f, 0.f, 0.f, 1.f,
+    };
+
+    glGenVertexArrays(1, &textVertexArray);
+    glBindVertexArray(textVertexArray);
+    glGenBuffers(1, &textVertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, textVertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * textVertices->size(), textVertices->data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
+
+    textColor = glm::vec3(1.f, 1.f, 1.f);
+    
+
     // initialize the window class and all its parts
 
     createShadowMapDependancies();
@@ -417,11 +438,8 @@ void Window::render(MenuItem* item) {
     glUseProgram(menuItemShaderProgram);
     glBindVertexArray(item->vertexArrayObject);
 
-    int screenPosLocation = glGetUniformLocation(menuItemShaderProgram, "screenPos");
     int backgroundColorLocation = glGetUniformLocation(menuItemShaderProgram, "backgroundColor");
 
-    glm::vec2 screenPos = glm::vec2(item->screenPos.x, item->screenPos.y);
-    glUniform2fv(screenPosLocation, 1, glm::value_ptr(screenPos));
     glUniform3fv(backgroundColorLocation, 1, glm::value_ptr(item->backgroundColor));
 
     glDrawElements(GL_TRIANGLES, item->numElements(), GL_UNSIGNED_INT, 0);
@@ -431,7 +449,63 @@ void Window::render(MenuItem* item) {
     // maybe you can combine all the text into one texture using a framebuffer
     // then you can pass that texture into the menuitem shader program
     // and render it using the item and some texture coords
-    
+
+    glUseProgram(textShaderProgram);
+    glBindVertexArray(textVertexArray);
+    glBindBuffer(GL_ARRAY_BUFFER, textVertexBuffer);
+
+    textColor = item->textColor;
+
+    int textColorLocation = glGetUniformLocation(textShaderProgram, "textColor");
+    glUniform3fv(textColorLocation, 1, glm::value_ptr(textColor));
+
+    glActiveTexture(GL_TEXTURE0);
+    int textureLocation = glGetUniformLocation(textShaderProgram, "glyphTexture");
+    glUniform1i(textureLocation, 0);
+
+    int numCharacters = item->content.length();
+    float scaleX = ( item->screenPos.z * 2 ) / numCharacters;
+    float scaleY = ( item->screenPos.w * 2) / numCharacters;
+
+    float textOffsetX = 0;
+    float textOffsetY = (item->screenPos.w);
+
+    for (char c : item->content) {
+
+        Character charac = characters->at(c);
+
+        float x = item->screenPos.x * 2 - 1 + textOffsetX;
+        float y = item->screenPos.y * 2 - 1 + textOffsetY;
+        float w = scaleX;
+        float h = scaleY;
+
+        (*textVertices)[0] = x;
+        (*textVertices)[1] = y;
+
+        (*textVertices)[4] = x;
+        (*textVertices)[5] = y + h;
+
+        (*textVertices)[8] = x + w;
+        (*textVertices)[9] = y + h;
+
+        (*textVertices)[12] = x + w;
+        (*textVertices)[13] = y + h;
+
+        (*textVertices)[16] = x + w;
+        (*textVertices)[17] = y;
+
+        (*textVertices)[20] = x;
+        (*textVertices)[21] = y;
+
+        textOffsetX+=scaleX;
+        //textOffsetY+=scaleY;
+
+        glBindTexture(GL_TEXTURE_2D, charac.texture);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * textVertices->size(), textVertices->data());
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    } 
 
 }
 
@@ -529,6 +603,7 @@ void Window::createShaderPrograms() {
     // create shaders for 2D gameObjects
     shaderProgram2D = Renderable::createBasicShaderProgram("basic2DVert.vert", "basic2DFrag.frag");
     collisionBoxShaderProgram = Renderable::createBasicShaderProgram("basicSolidColorVert.vert", "basicSolidColorFrag.frag");
+    textShaderProgram = Renderable::createBasicShaderProgram("textShader.vert", "AbsoluteTextShader.frag");
 
     menuItemShaderProgram = Renderable::createBasicShaderProgram("menuItem.vert", "menuItem.frag");
 

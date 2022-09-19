@@ -10,12 +10,13 @@ namespace dojo {
 
 class MenuItem : public Renderable {
 public:
-    MenuItem(glm::vec4 pos, glm::vec3 _backgroundColor, std::string _content);
+    MenuItem(std::string _content, glm::vec4 _pos, glm::vec3 _backgroundColor, glm::vec3 _textColor = glm::vec3(1.f, 1.f, 1.f));
 
     ~MenuItem();
 
     glm::vec4 screenPos;
     glm::vec3 backgroundColor;
+    glm::vec3 textColor;
 
     std::string content;
 };

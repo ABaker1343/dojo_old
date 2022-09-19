@@ -2,16 +2,16 @@
 
 namespace dojo {
 
-MenuItem::MenuItem(glm::vec4 pos, glm::vec3 _backgroundColor, std::string _content) {
-    screenPos = pos;
+MenuItem::MenuItem(std::string _content, glm::vec4 _pos, glm::vec3 _backgroundColor, glm::vec3 _textColor){
+    screenPos = _pos;
     content = _content;
     backgroundColor = _backgroundColor;
 
     vertices = new std::vector<float> {
         screenPos.x, screenPos.y, 0.f, 0.f, 0.f,
-        screenPos.x, screenPos.y + screenPos.z, 0.f, 0.f, 0.f,
-        screenPos.x + screenPos.w, screenPos.y + screenPos.z, 0.f, 0.f, 0.f,
-        screenPos.x + screenPos.w, screenPos.y, 0.f, 0.f, 0.f,
+        screenPos.x, screenPos.y + screenPos.w, 0.f, 0.f, 0.f,
+        screenPos.x + screenPos.z, screenPos.y + screenPos.w, 0.f, 0.f, 0.f,
+        screenPos.x + screenPos.z, screenPos.y, 0.f, 0.f, 0.f,
     };
 
     elements = new std::vector<unsigned int> {
