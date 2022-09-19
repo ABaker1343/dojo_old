@@ -7,6 +7,7 @@ int main () {
     FileHandler::shaderPath = "src/shaders/";
 
     auto *window = new dojo::Window(100, 100, "newWIndow");
+    auto *renderer = new dojo::Renderer(window);
     auto *square = new dojo::GameObject2DSprite("texture.png", glm::vec3(0.f, 0.f, 0.f), glm::vec3(5.f, 5.f, 1.f));
     auto *camera = new dojo::Camera3D();
 
@@ -21,10 +22,10 @@ int main () {
     std::cout << "collider offset" << collider->getAbsoluteOffset().x << " " << collider->getAbsoluteOffset().y << std::endl;
 
     while (window->isAlive()) {
-        window->clear();
+        renderer->clear(window);
         handleInput(window, square, collider);
-        window->render(camera, square);
-        window->render(camera, collider);
+        renderer->render(window, camera, square);
+        renderer->render(window, camera, collider);
     }
 }
 

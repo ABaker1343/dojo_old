@@ -1,4 +1,5 @@
 #include "src/headers/dojo.hpp"
+#include "src/headers/renderer.hpp"
 
 void handleInputs(dojo::Window*, dojo::Camera3D*, dojo::GameObject*);
 
@@ -7,6 +8,7 @@ int main () {
     FileHandler::shaderPath = "src/shaders/";
 
     auto *window = new dojo::Window(100, 100, "new Window");
+    auto *renderer = new dojo::Renderer(window);
     auto *cube = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "texture.png");
     auto *otherObj = new dojo::GameObject3DTextured("monkey.obj", "texture.png",
             glm::vec3(3.f,3.f,0.f));
@@ -30,22 +32,22 @@ int main () {
     }
 
     while (window->isAlive()) {
-        window->clear();
-        window->clearShadow();
+        renderer->clear(window);
+        renderer->clearShadow();
         //rotate the cube
         cube->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
         handleInputs(window, camera, lightSource);
-        window->renderShadows(cube, lightSource);
-        window->renderShadows(largeCube, lightSource);
+        renderer->renderShadows(cube, lightSource);
+        renderer->renderShadows(largeCube, lightSource);
         for (auto obj : *objects) {
             obj->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
-            window->renderShadows(obj, lightSource);
+            renderer->renderShadows(obj, lightSource);
         }
-        window->render(camera, cube, lightSource);
-        window->render(camera, lightSource);
-        window->render(camera, largeCube, lightSource);
+        renderer->render(window, camera, cube, lightSource);
+        renderer->render(window, camera, lightSource);
+        renderer->render(window, camera, largeCube, lightSource);
         for (auto obj : *objects) {
-            window->render(camera, obj, lightSource);
+            renderer->render(window, camera, obj, lightSource);
         }
     }
 

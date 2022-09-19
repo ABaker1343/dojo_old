@@ -1,4 +1,5 @@
 #include "src/headers/dojo.hpp"
+#include "src/headers/renderer.hpp"
 
 void handleInputs(dojo::Window*, dojo::Camera3D*, dojo::GameObjectSpotLightSource*);
 
@@ -9,6 +10,7 @@ int main () {
     FileHandler::shaderPath = "src/shaders/";
 
     auto *window = new dojo::Window(100, 100, "newWindow");
+    auto *renderer = new dojo::Renderer(window);
     auto *object = new dojo::GameObject3DTextured("monkey.obj", "texture.png",
             glm::vec3(2.f, 0.f, 2.f));
     auto *camera1 = new dojo::Camera3D();
@@ -34,8 +36,8 @@ int main () {
     }
 
     while (window->isAlive()) {
-        window->clear();
-        window->clearShadow();
+        renderer->clear(window);
+        renderer->clearShadow();
         handleInputs(window, camera2, light);
 
         for (auto& o : *objects){
@@ -46,22 +48,22 @@ int main () {
                     //o.getPos().z + (rand() % 11) - 5
                   //);
 
-            window->renderShadows(&o, light);
+            renderer->renderShadows(&o, light);
         }
 
-        window->renderShadows(floor, light);
+        renderer->renderShadows(floor, light);
 
-        window->render(camera2, floor, light);
+        renderer->render(window, camera2, floor, light);
 
         for (auto& o : *objects){
-            window->render(camera2, &o, light);
-            window->render(camera1, &o, light);
+            renderer->render(window, camera2, &o, light);
+            renderer->render(window, camera1, &o, light);
         }
         //window->render(camera2, object, light);
 
         //window->render(camera1, object, light);
-        window->render(camera1, floor, light);
-        window->render(camera1, light);
+        renderer->render(window, camera1, floor, light);
+        renderer->render(window, camera1, light);
         
         //window->render(camera3, object, light);
         //window->render(camera3, floor, light);

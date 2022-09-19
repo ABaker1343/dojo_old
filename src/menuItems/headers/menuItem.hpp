@@ -19,6 +19,11 @@ public:
     glm::vec3 textColor;
 
     std::string content;
+
+    unsigned int texture;
+
+private:
+    void renderTexture();
 };
 
 }

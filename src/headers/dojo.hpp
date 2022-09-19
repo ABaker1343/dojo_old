@@ -1,4 +1,5 @@
 #include "window.hpp"
+#include "renderer.hpp"
 #include "renderable.hpp"
 
 #include "../gameObjects/headers/gameObject2DSprite.hpp"

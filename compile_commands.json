@@ -1,0 +1,24 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-I.",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-I/usr/include/harfbuzz",
+      "-I/usr/include/glib-2.0",
+      "-I/usr/lib/glib-2.0/include",
+      "-I/usr/include/sysprof-4",
+      "-pthread",
+      "-Wall",
+      "-Wl,-rpath=RIGIN",
+      "-o",
+      "game",
+      "tester.cpp"
+    ],
+    "directory": "/bigboi/code/dojo",
+    "file": "/bigboi/code/dojo/tester.cpp",
+    "output": "/bigboi/code/dojo/game"
+  }
+]

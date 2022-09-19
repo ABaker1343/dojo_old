@@ -5,6 +5,7 @@
 #include <time.h>
 
 #include "src/headers/dojo.hpp"
+#include "src/headers/renderer.hpp"
 
 typedef struct INPUT_HANDLER_INPUTS {
     dojo::Window* window;
@@ -24,6 +25,7 @@ int main () {
     srand(time(NULL));
 
     dojo::Window *window = new dojo::Window(500, 500, "dojoWindow");
+    dojo::Renderer *renderer = new dojo::Renderer(window);
 
     //dojo::GameObject2DSprite *player = new dojo::GameObject2DSprite("bgCatAndSakura.jpg");
     dojo::GameObject2DAnimatedSprite *player = new dojo::GameObject2DAnimatedSprite(4, "animation0.jpg", glm::vec3(-2.f, -1.f, 0.f), glm::vec3(5.f, 2.f, 1.f));
@@ -34,7 +36,6 @@ int main () {
 
     dojo::Camera3D *c = new dojo::Camera3D();
 
-    //dojo::GameObject2DCollisionBox *playerCollider = new dojo::GameObject2DCollisionBox(player);
     dojo::GameObject2DCollisionBox *playerCollider = new dojo::GameObject2DCollisionBox(player, 0.5f, 0.5f, 0.5f, 0.5f);
     dojo::GameObject2DCollisionBox *cameraCollider = new dojo::GameObject2DCollisionBox(c);
 
@@ -77,16 +78,16 @@ int main () {
         auto start = std::chrono::system_clock::now();
 
         handleInputs(&hinputs);
-        window->clear();
+        renderer->clear(window);
 
-        window->render(c, player);
-        window->render(c, playerCollider);
+        renderer->render(window, c, player);
+        renderer->render(window, c, playerCollider);
 
         for (std::vector<dojo::GameObject2DSprite*>::iterator it = objects->begin(); it != objects->end(); it++){
-            window->render(c, *it);
+            renderer->render(window, c, *it);
         }
         for (std::vector<dojo::GameObject2DCollisionBox*>::iterator it = colliders->begin(); it != colliders->end(); it++) {
-            window->render(c, *it);
+            renderer->render(window, c, *it);
         }
 
         if (!player->nextFrame()) {
