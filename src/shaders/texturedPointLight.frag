@@ -13,6 +13,7 @@ uniform samplerCube inDepthMap;
 
 uniform vec3 lightPos;
 uniform vec3 lightColor;
+uniform float ambientIntensity;
 
 uniform float farPlane;
 
@@ -33,8 +34,7 @@ float ShadowCalculation(vec3 fragPos) {
 
 void main() {
 
-    float ambientStrength = 0.15;
-    vec3 ambientLight = ambientStrength * lightColor;
+    vec3 ambientLight = ambientIntensity * lightColor;
 
     vec3 normal = normalize(fs_in.normal);
     vec3 lightDir = normalize(lightPos - fs_in.fragPos);

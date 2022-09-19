@@ -39,8 +39,8 @@ class Renderer {
         void render(Window *window, Camera3D *c, GameObject2DSprite *s);
         void render(Window *window, Camera3D *c, GameObject2DAnimatedSprite *s);
         void render(Window *window, Camera3D *c, GameObject2DCollisionBox *b);
-        void render(Window *window, Camera3D *c, GameObject3DTextured *cube, GameObjectSpotLightSource *light);
-        void render(Window *window, Camera3D *c, GameObject3DTextured *cube, GameObjectPointLightSource *light);
+        void render(Window *window, Camera3D *c, GameObject3DTextured *cube, GameObjectSpotLightSource *light, float ambientIntensity = 0.15);
+        void render(Window *window, Camera3D *c, GameObject3DTextured *cube, GameObjectPointLightSource *light, float ambientIntensity = 0.15);
         void render(Window *window, Camera3D *c, GameObjectSpotLightSource *light);
         void render(Window *window, Camera3D *c, GameObjectPointLightSource *light);
 
@@ -48,6 +48,8 @@ class Renderer {
 
         void renderShadows(GameObject3DTextured *obj, GameObjectSpotLightSource *light);
         void renderShadows(GameObject3DTextured *obj, GameObjectPointLightSource *light);
+
+        unsigned int renderTextToTexture(std::string text, unsigned int sizex, unsigned int sizey);
 
     private:
         unsigned int boxElementBuffer;
@@ -63,11 +65,14 @@ class Renderer {
 
         const unsigned int SHADOW_HEIGHT = 1024, SHADOW_WIDTH = 1024;
 
+        // framebuffers
         unsigned int depthMapFrameBuffer = 0;
         unsigned int depthMap = 0;
 
         unsigned int depthCubeMapFrameBuffer = 0;
         unsigned int depthCubeMap = 0;
+
+        unsigned int textFramebuffer = 0;
 
         // vertex Array Objects
         unsigned int collisionBoxVertexArray;
@@ -89,11 +94,13 @@ class Renderer {
         unsigned int pointLightShaderProgram = 0;
 
         unsigned int menuItemShaderProgram = 0;
+        unsigned int menuItemTexturedShaderProgram = 0;
 
         // methods
 
         void createShadowMapDependancies();
         void createShadowCubeMapDependancies();
+        void createTextFramebuffer();
 
         void createCollisionBoxRenderDependancies();
 

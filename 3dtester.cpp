@@ -18,6 +18,9 @@ int main () {
 
     auto largeCube = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "animation0.jpg",
             glm::vec3(0.f, -5.f, 0.f), glm::vec3(100.f, 1.f, 100.f));
+    
+    unsigned int texture = renderer->renderTextToTexture("INGERLAND" , 100, 100);
+    largeCube->texture = texture;
 
     auto *camera = new dojo::Camera3D();
 
@@ -43,7 +46,7 @@ int main () {
             obj->rotate(0.5f, glm::vec3(1.f, 1.f, 1.f));
             renderer->renderShadows(obj, lightSource);
         }
-        renderer->render(window, camera, cube, lightSource);
+        renderer->render(window, camera, cube, lightSource, 0.7);
         renderer->render(window, camera, lightSource);
         renderer->render(window, camera, largeCube, lightSource);
         for (auto obj : *objects) {

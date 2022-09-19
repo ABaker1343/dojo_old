@@ -41,7 +41,6 @@ namespace dojo {
 
             // load the characters glyph
             if (FT_Load_Char(ftArial, c, FT_LOAD_RENDER) != 0) {
-                std::cout << "failed to load character " << c << " in font arial" << std::endl;
                 throw std::runtime_error("failed to load character in font");
             }
 
@@ -109,6 +108,7 @@ namespace dojo {
 
         createShadowMapDependancies();
         createShadowCubeMapDependancies();
+        createTextFramebuffer();
 
         createCollisionBoxRenderDependancies();
         colliderColor = glm::vec4(0.f, 1.f, 0.f, 0.2f);
@@ -191,7 +191,7 @@ void Renderer::render(Window *window, Camera3D *c, GameObject2DAnimatedSprite *s
     glDrawElements(GL_TRIANGLES, s->numElements(), GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::render(Window *window, Camera3D *c, GameObject3DTextured *obj, GameObjectSpotLightSource *light) {
+void Renderer::render(Window *window, Camera3D *c, GameObject3DTextured *obj, GameObjectSpotLightSource *light, float ambientIntensity) {
     glViewport(c->viewport.x * window->winWidth, c->viewport.y * window->winHeight, c->viewport.w * window->winWidth, c->viewport.h * window->winHeight);
     glUseProgram(spotLightShaderProgram);
     glBindVertexArray(obj->vertexArrayObject);
@@ -222,6 +222,7 @@ void Renderer::render(Window *window, Camera3D *c, GameObject3DTextured *obj, Ga
 
     int lightColorLocation = glGetUniformLocation(spotLightShaderProgram, "lightColor");
     int lightPosLocation = glGetUniformLocation(spotLightShaderProgram, "lightPos");
+    int ambientIntensityLocation = glGetUniformLocation(spotLightShaderProgram, "ambientIntensity");
 
     int lightViewTransformLocation = glGetUniformLocation(spotLightShaderProgram, "lightViewTransform");
     int lightProjectionTransformLocation = glGetUniformLocation(spotLightShaderProgram, "lightProjectionTransform");
@@ -231,6 +232,7 @@ void Renderer::render(Window *window, Camera3D *c, GameObject3DTextured *obj, Ga
 
     glUniform3fv(lightColorLocation, 1, glm::value_ptr(light->lightColor));
     glUniform3fv(lightPosLocation, 1, glm::value_ptr(light->getPos()));
+    glUniform1f(ambientIntensityLocation, ambientIntensity);
 
     glUniformMatrix4fv(lightViewTransformLocation, 1, GL_FALSE, glm::value_ptr(light->getViewTransform()));
     glUniformMatrix4fv(lightProjectionTransformLocation, 1, GL_FALSE, glm::value_ptr(light->getProjectionTransform()));
@@ -239,7 +241,7 @@ void Renderer::render(Window *window, Camera3D *c, GameObject3DTextured *obj, Ga
 
 }
 
-void Renderer::render(Window *window, Camera3D *c, GameObject3DTextured *obj, GameObjectPointLightSource *light) {
+void Renderer::render(Window *window, Camera3D *c, GameObject3DTextured *obj, GameObjectPointLightSource *light, float ambientIntensity) {
     glViewport(c->viewport.x * window->winWidth, c->viewport.y * window->winHeight, c->viewport.w * window->winWidth, c->viewport.h * window->winHeight);
     glUseProgram(pointLightShaderProgram);
     glBindVertexArray(obj->vertexArrayObject);
@@ -270,6 +272,8 @@ void Renderer::render(Window *window, Camera3D *c, GameObject3DTextured *obj, Ga
 
     int lightColorLocation = glGetUniformLocation(pointLightShaderProgram, "lightColor");
     int lightPosLocation = glGetUniformLocation(pointLightShaderProgram, "lightPos");
+    int ambientIntensityLocation = glGetUniformLocation(spotLightShaderProgram, "ambientIntensity");
+
     int farPlaneLocation = glGetUniformLocation(pointLightShaderProgram, "farPlane");
 
     glUniform1i(animationFrameUniformLocation, 0);
@@ -277,6 +281,7 @@ void Renderer::render(Window *window, Camera3D *c, GameObject3DTextured *obj, Ga
 
     glUniform3fv(lightColorLocation, 1, glm::value_ptr(light->lightColor));
     glUniform3fv(lightPosLocation, 1, glm::value_ptr(light->getPos()));
+    glUniform1f(ambientIntensityLocation, ambientIntensity);
     glUniform1f(farPlaneLocation, light->farPlane);
 
     glDrawArrays(GL_TRIANGLES, 0, obj->numVertices());
@@ -342,78 +347,92 @@ void Renderer::render(Window *window, Camera3D *c, GameObjectPointLightSource *l
 }
 
 void Renderer::render(Window *window, MenuItem* item) {
+
     glViewport(0, 0, window->winWidth, window->winHeight);
-    glUseProgram(menuItemShaderProgram);
-    glBindVertexArray(item->vertexArrayObject);
 
-    int backgroundColorLocation = glGetUniformLocation(menuItemShaderProgram, "backgroundColor");
+    if (item->texture == 0) {
 
-    glUniform3fv(backgroundColorLocation, 1, glm::value_ptr(item->backgroundColor));
+        glUseProgram(menuItemShaderProgram);
+        glBindVertexArray(item->vertexArrayObject);
 
-    glDrawElements(GL_TRIANGLES, item->numElements(), GL_UNSIGNED_INT, 0);
+        int backgroundColorLocation = glGetUniformLocation(menuItemShaderProgram, "backgroundColor");
 
-    // then we have to render some text on top of the box so that the item is complete
-    // this might be doable with the same shader program
-    // maybe you can combine all the text into one texture using a framebuffer
-    // then you can pass that texture into the menuitem shader program
-    // and render it using the item and some texture coords
+        glUniform3fv(backgroundColorLocation, 1, glm::value_ptr(item->backgroundColor));
 
-    glUseProgram(textShaderProgram);
-    glBindVertexArray(textVertexArray);
-    glBindBuffer(GL_ARRAY_BUFFER, textVertexBuffer);
+        glDrawArrays(GL_TRIANGLES, 0 , item->numVertices());
 
-    textColor = item->textColor;
+        // render the text on top of the menu item
 
-    int textColorLocation = glGetUniformLocation(textShaderProgram, "textColor");
-    glUniform3fv(textColorLocation, 1, glm::value_ptr(textColor));
+        glUseProgram(textShaderProgram);
+        glBindVertexArray(textVertexArray);
+        glBindBuffer(GL_ARRAY_BUFFER, textVertexBuffer);
 
-    glActiveTexture(GL_TEXTURE0);
-    int textureLocation = glGetUniformLocation(textShaderProgram, "glyphTexture");
-    glUniform1i(textureLocation, 0);
+        textColor = item->textColor;
 
-    int numCharacters = item->content.length();
-    float scaleX = ( item->screenPos.z * 2 ) / numCharacters;
-    float scaleY = ( item->screenPos.w * 2) / numCharacters;
+        int textColorLocation = glGetUniformLocation(textShaderProgram, "textColor");
+        glUniform3fv(textColorLocation, 1, glm::value_ptr(textColor));
 
-    float textOffsetX = 0;
-    float textOffsetY = (item->screenPos.w);
+        glActiveTexture(GL_TEXTURE0);
+        int textureLocation = glGetUniformLocation(textShaderProgram, "glyphTexture");
+        glUniform1i(textureLocation, 0);
 
-    for (char c : item->content) {
+        int numCharacters = item->content.length();
+        float scaleX = ( item->screenPos.z * 2 ) / numCharacters;
+        float scaleY = ( item->screenPos.w * 2) / numCharacters;
 
-        Character charac = characters->at(c);
+        float textOffsetX = 0;
+        float textOffsetY = (item->screenPos.w);
 
-        float x = item->screenPos.x * 2 - 1 + textOffsetX;
-        float y = item->screenPos.y * 2 - 1 + textOffsetY;
-        float w = scaleX;
-        float h = scaleY;
+        for (char c : item->content) {
 
-        (*textVertices)[0] = x;
-        (*textVertices)[1] = y;
+            Character charac = characters->at(c);
 
-        (*textVertices)[4] = x;
-        (*textVertices)[5] = y + h;
+            float x = item->screenPos.x * 2 - 1 + textOffsetX;
+            float y = item->screenPos.y * 2 - 1 + textOffsetY;
+            float w = scaleX;
+            float h = scaleY;
 
-        (*textVertices)[8] = x + w;
-        (*textVertices)[9] = y + h;
+            (*textVertices)[0] = x;
+            (*textVertices)[1] = y;
 
-        (*textVertices)[12] = x + w;
-        (*textVertices)[13] = y + h;
+            (*textVertices)[4] = x;
+            (*textVertices)[5] = y + h;
 
-        (*textVertices)[16] = x + w;
-        (*textVertices)[17] = y;
+            (*textVertices)[8] = x + w;
+            (*textVertices)[9] = y + h;
 
-        (*textVertices)[20] = x;
-        (*textVertices)[21] = y;
+            (*textVertices)[12] = x + w;
+            (*textVertices)[13] = y + h;
 
-        textOffsetX+=scaleX;
-        //textOffsetY+=scaleY;
+            (*textVertices)[16] = x + w;
+            (*textVertices)[17] = y;
 
-        glBindTexture(GL_TEXTURE_2D, charac.texture);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * textVertices->size(), textVertices->data());
+            (*textVertices)[20] = x;
+            (*textVertices)[21] = y;
+
+            textOffsetX+=scaleX;
+            //textOffsetY+=scaleY;
+
+            glBindTexture(GL_TEXTURE_2D, charac.texture);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * textVertices->size(), textVertices->data());
+
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        }
+
+    } else {
+
+        glUseProgram(menuItemTexturedShaderProgram);
+        glBindVertexArray(item->vertexArrayObject);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, item->texture);
+        int textureLocation = glGetUniformLocation(menuItemTexturedShaderProgram, "inTexture");
+        glUniform1i(textureLocation, 0);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    } 
+    }
 
 }
 
@@ -507,13 +526,18 @@ void Renderer::createShadowCubeMapDependancies() {
 
 }
 
+void Renderer::createTextFramebuffer() {
+    glGenFramebuffers(1, &textFramebuffer);
+}
+
 void Renderer::createShaderPrograms() {
     // create shaders for 2D gameObjects
     shaderProgram2D = Renderable::createBasicShaderProgram("basic2DVert.vert", "basic2DFrag.frag");
     collisionBoxShaderProgram = Renderable::createBasicShaderProgram("basicSolidColorVert.vert", "basicSolidColorFrag.frag");
-    textShaderProgram = Renderable::createBasicShaderProgram("textShader.vert", "AbsoluteTextShader.frag");
+    textShaderProgram = Renderable::createBasicShaderProgram("textShader.vert", "textShader.frag");
 
     menuItemShaderProgram = Renderable::createBasicShaderProgram("menuItem.vert", "menuItem.frag");
+    menuItemTexturedShaderProgram = Renderable::createBasicShaderProgram("menuItem.vert", "menuItemTextured.frag");
 
     // create shader programs that will render to framebuffers for depth mapping
     shadowMapShaderProgram = Renderable::createBasicShaderProgram("shadowVert.vert", "emptyFrag.frag");
@@ -546,7 +570,6 @@ void Renderer::renderShadows(GameObject3DTextured *obj, GameObjectSpotLightSourc
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
 }
 
 void Renderer::renderShadows(GameObject3DTextured* obj, GameObjectPointLightSource *light) {
@@ -572,6 +595,105 @@ void Renderer::renderShadows(GameObject3DTextured* obj, GameObjectPointLightSour
     glDrawArrays(GL_TRIANGLES, 0, obj->numVertices());
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+unsigned int Renderer::renderTextToTexture(std::string text, unsigned int sizex, unsigned int sizey) {
+
+    glViewport(0, 0, sizex, sizey);
+    glBindFramebuffer(GL_FRAMEBUFFER, textFramebuffer);
+
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, sizex, sizey, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    unsigned int renderbuffer;
+    glGenRenderbuffers(1, &renderbuffer);
+
+    glBindRenderbuffer(1, renderbuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, sizex, sizey);
+
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderbuffer);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+        throw std::runtime_error("failed to render text to texture");
+    }
+    
+    // render the text
+    
+    glClearColor(1.0, 0,0,1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glm::vec2 offset;
+    offset.x = 0.f;
+    offset.y = 0.5f;
+    glm::vec2 scale;
+    scale.x = 2.f / (float)text.length();
+    scale.y = 1.f;
+
+    textColor = glm::vec3(0.f, 1.f, 0.f);
+
+    glUseProgram(textShaderProgram);
+    glBindVertexArray(textVertexArray);
+    glBindBuffer(GL_ARRAY_BUFFER, textVertexBuffer);
+
+    int colorLocation = glGetUniformLocation(textShaderProgram, "textColor");
+    glUniform3fv(colorLocation, 1, glm::value_ptr(textColor));
+
+    glActiveTexture(GL_TEXTURE0);
+    int textureLocation = glGetUniformLocation(textShaderProgram, "glyphTexture");
+    glUniform1i(textureLocation, 0);
+
+    for (char c : text) {
+        Character ch = characters->at(c);
+
+        float x = -1 + offset.x;
+        float y = -1 + offset.y;
+        float w = scale.x;
+        float h = scale.y;
+
+        (*textVertices)[0] = x;
+        (*textVertices)[1] = y;
+
+        (*textVertices)[4] = x;
+        (*textVertices)[5] = y + h;
+
+        (*textVertices)[8] = x + w;
+        (*textVertices)[9] = y + h;
+
+        (*textVertices)[12] = x + w;
+        (*textVertices)[13] = y + h;
+
+        (*textVertices)[16] = x + w;
+        (*textVertices)[17] = y;
+
+        (*textVertices)[20] = x;
+        (*textVertices)[21] = y;
+        
+        offset.x += scale.x;
+        offset.y += 0;
+
+        glBindTexture(GL_TEXTURE_2D, ch.texture);
+
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * textVertices->size(), textVertices->data());
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDeleteRenderbuffers(1, &renderbuffer);
+
+    return texture;
+
 }
 
 void Renderer::clearShadow() {

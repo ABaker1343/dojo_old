@@ -14,6 +14,7 @@ uniform sampler2D inDepthMap;
 
 uniform vec3 lightPos;
 uniform vec3 lightColor;
+uniform float ambientIntensity;
 
 uniform int flip;
 
@@ -26,6 +27,7 @@ float ShadowCalculation(vec4 fragPosLightSpace) {
     float closestDepth = texture(inDepthMap, projCoords.xy).r;
     float currentDepth = projCoords.z;
     
+    //float bias = 0.0001;
     float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
 
     return shadow;
@@ -33,8 +35,7 @@ float ShadowCalculation(vec4 fragPosLightSpace) {
 
 void main() {
 
-    float ambientStrength = 0.15;
-    vec3 ambientLight = ambientStrength * lightColor;
+    vec3 ambientLight = ambientIntensity * lightColor;
 
     vec3 normal = normalize(fs_in.normal);
     vec3 lightDir = normalize(lightPos - fs_in.fragPos);

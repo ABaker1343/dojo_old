@@ -9,5 +9,5 @@ uniform vec3 textColor;
 void main () {
     vec4 sampled = vec4(textColor, texture(glyphTexture, texPos).r);
     color = vec4(textColor , 1.0) * sampled;
-    //color texture(glyphTexture, texPos);
+    //color = vec4(textColor, 1.0);
 }
