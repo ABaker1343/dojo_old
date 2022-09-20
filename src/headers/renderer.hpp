@@ -49,7 +49,8 @@ class Renderer {
         void renderShadows(GameObject3DTextured *obj, GameObjectSpotLightSource *light);
         void renderShadows(GameObject3DTextured *obj, GameObjectPointLightSource *light);
 
-        unsigned int renderTextToTexture(std::string text, unsigned int sizex, unsigned int sizey);
+        unsigned int renderTextToTexture(std::string text, glm::ivec2 size = glm::ivec2(500, 500),
+                glm::vec3 textColor = glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3 backgroundColor = glm::vec3(1.0f, 1.0f, 1.0f));
 
     private:
         unsigned int boxElementBuffer;

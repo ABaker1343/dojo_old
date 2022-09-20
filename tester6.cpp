@@ -10,7 +10,7 @@ int main () {
 
     auto window = new Window(100, 100, "menuWindow");
     auto renderer = new Renderer(window);
-    unsigned int tex = renderer->renderTextToTexture("menu Item", 500, 600);
+    unsigned int tex = renderer->renderTextToTexture("menu Item", glm::ivec2(6000, 8000));
     auto menuItem = new MenuItem(tex, glm::vec4(0.25, 0.7, 0.5, 0.15));
     auto menuItem2 = new MenuItem("and another one", glm::vec4(0.25, 0.5, 0.5, 0.15), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(0.f, 0.f, 0.f));
     auto menuItem3 = new MenuItem("and yet another one but this one has quite a long text ontop of it which means that we might have to use more than one line", glm::vec4(0.25, 0.3, 0.5, 0.15), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(0.f, 0.f, 0.f));

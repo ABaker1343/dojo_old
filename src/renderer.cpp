@@ -597,9 +597,9 @@ void Renderer::renderShadows(GameObject3DTextured* obj, GameObjectPointLightSour
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-unsigned int Renderer::renderTextToTexture(std::string text, unsigned int sizex, unsigned int sizey) {
+unsigned int Renderer::renderTextToTexture(std::string _text, glm::ivec2 _size, glm::vec3 _textColor, glm::vec3 _backgroundColor) {
 
-    glViewport(0, 0, sizex, sizey);
+    glViewport(0, 0, _size.x, _size.y);
     glBindFramebuffer(GL_FRAMEBUFFER, textFramebuffer);
 
     unsigned int texture;
@@ -609,7 +609,7 @@ unsigned int Renderer::renderTextToTexture(std::string text, unsigned int sizex,
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, sizex, sizey, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, _size.x, _size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -617,7 +617,7 @@ unsigned int Renderer::renderTextToTexture(std::string text, unsigned int sizex,
     glGenRenderbuffers(1, &renderbuffer);
 
     glBindRenderbuffer(1, renderbuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, sizex, sizey);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, _size.x, _size.y);
 
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
@@ -630,17 +630,17 @@ unsigned int Renderer::renderTextToTexture(std::string text, unsigned int sizex,
     
     // render the text
     
-    glClearColor(1.0, 0,0,1.0);
+    glClearColor(_backgroundColor.r, _backgroundColor.g, _backgroundColor.b, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glm::vec2 offset;
     offset.x = 0.f;
     offset.y = 0.5f;
     glm::vec2 scale;
-    scale.x = 2.f / (float)text.length();
+    scale.x = 2.f / (float)_text.length();
     scale.y = 1.f;
 
-    textColor = glm::vec3(0.f, 1.f, 0.f);
+    textColor = _textColor;
 
     glUseProgram(textShaderProgram);
     glBindVertexArray(textVertexArray);
@@ -653,7 +653,7 @@ unsigned int Renderer::renderTextToTexture(std::string text, unsigned int sizex,
     int textureLocation = glGetUniformLocation(textShaderProgram, "glyphTexture");
     glUniform1i(textureLocation, 0);
 
-    for (char c : text) {
+    for (char c : _text) {
         Character ch = characters->at(c);
 
         float x = -1 + offset.x;

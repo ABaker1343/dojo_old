@@ -13,13 +13,13 @@ int main () {
     auto *otherObj = new dojo::GameObject3DTextured("monkey.obj", "texture.png",
             glm::vec3(3.f,3.f,0.f));
 
-    auto *lightSource = new dojo::GameObjectSpotLightSource(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f),
+    auto *lightSource = new dojo::GameObjectSpotLightSource(glm::vec3(3.f, 3.f, 3.f), glm::vec3(1.f, 1.f, 1.f),
             glm::vec3(7.f, 7.f, -5.f));
 
     auto largeCube = new dojo::GameObject3DTextured(dojo::GameObject3DTextured::Shape::cube, "animation0.jpg",
             glm::vec3(0.f, -5.f, 0.f), glm::vec3(100.f, 1.f, 100.f));
     
-    unsigned int texture = renderer->renderTextToTexture("INGERLAND" , 100, 100);
+    unsigned int texture = renderer->renderTextToTexture("INGERLAND" , glm::ivec2(400,400));
     largeCube->texture = texture;
 
     auto *camera = new dojo::Camera3D();
