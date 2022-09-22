@@ -12,6 +12,9 @@ out : $(SOURCE)
 	$(CC) -o game5 tester5.cpp $(CFLAGS)
 	$(CC) -o game6 tester6.cpp $(CFLAGS)
 
+game7:
+	$(CC) -o game7 tester7.cpp $(CFLAGS)
+
 clean:
 	rm game
 	rm game2
@@ -19,3 +22,4 @@ clean:
 	rm game4
 	rm game5
 	rm game6
+	rm game7
