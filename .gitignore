@@ -8,3 +8,4 @@ src/*.o
 src/.cache/
 src/gameObjects/*.o
 src/menuItems/*.o
+runner.*
