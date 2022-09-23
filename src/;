@@ -207,7 +207,7 @@ void FileHandler::readNode(FBX_NODE* rootNode, std::vector<char> *buffer, unsign
     // read the properties of the node
     rootNode->properties = (FBX_PROPERTY*)malloc(sizeof(FBX_PROPERTY) * rootNode->propertyListLen);
     
-    for (unsigned int i = 0; i < rootNode->numProperties; i++) {
+    for (unsigned int i = 0; i < rootNode->propertyListLen; i++) {
         FBX_PROPERTY newProp;
         char typeCode;
         memcpy(&typeCode, buffer->data() + filemark, 1);
@@ -323,7 +323,7 @@ void FileHandler::readNode(FBX_NODE* rootNode, std::vector<char> *buffer, unsign
 
     // check for nested lists
     
-    while(!(filemark > rootNode->endOffset)) {
+    if (!(filemark >= rootNode->endOffset)) {
         FBX_NODE* newNode = (FBX_NODE*)malloc(sizeof(FBX_NODE));
         readNode(newNode, buffer, filemark);
     }

@@ -9,6 +9,32 @@
 
 class FileHandler  {
 public:
+    struct FBX_ARRAY_TYPE {
+        unsigned int arrayLength;
+        unsigned int encoding;
+        unsigned int compressedLength;
+        void* data;
+    };
+
+    struct FBX_SPECIAL_TYPE {
+        unsigned int length;
+        char* data;
+    };
+
+    struct FBX_PROPERTY {
+        char typeCode;
+        void* data;
+    };
+
+    struct FBX_NODE {
+        unsigned int endOffset;
+        unsigned int numProperties;
+        unsigned int propertyListLen;
+        unsigned char nameLen;
+        char* name;
+        FBX_PROPERTY* properties;
+        FBX_NODE* nestedNodes;
+    };
 
     static std::string shaderPath;
 
@@ -17,6 +43,10 @@ public:
             std::vector<float> *textureCoords, std::vector<float> *normals, std::vector<unsigned int> *elements);
     static unsigned char* loadImage(const char* filepath, int &width, int& height, int& numChannels);
     static void loadModelFBX(const char* filepath, std::vector<float> *vertices, std::vector<float> *textures, std::vector<float> *normals);
+
+private:
+    static void readNode(FBX_NODE* rootNode, std::vector<char> *buffer, unsigned long &filemark);
+
 
 };
 
