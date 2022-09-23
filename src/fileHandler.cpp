@@ -176,7 +176,36 @@ void FileHandler::loadModelFBX(const char* filepath, std::vector<float> *vertice
     std::cout << "version: " << version << std::endl;
 
     FBX_NODE rootNode;
+    rootNode.parentNode = NULL;
     readNode(&rootNode, buffer, filemark);
+
+    // interpret the data in the nodes
+    
+    /*int found = 0;
+    FBX_NODE *currentNode = &rootNode;
+    FBX_NODE *foundNode = NULL;
+
+    while (!found) {
+        for (unsigned int i = 0; i < currentNode->numSubNodes; i++){
+            if (strcmp(currentNode->nestedNodes[i].name, "Vertices") == 0){
+                found = true;
+                foundNode = currentNode;
+                break;
+            }
+        }
+        if (currentNode->numSubNodes > 0) {
+            currentNode = &(currentNode->nestedNodes[0]);
+        }
+    }
+    
+    if (found) {
+        printf("found vertices\n");
+    } else {
+        printf("not found\n");
+    } fflush(stdout);*/
+
+
+    freeNodes(&rootNode);
 
     // make sure that all neccesary data is freed, if its not this will cause huge memory leaks
 
@@ -322,11 +351,17 @@ void FileHandler::readNode(FBX_NODE* rootNode, std::vector<char> *buffer, unsign
     }
 
     // check for nested lists
+    std::vector<FBX_NODE> *nestedNodes = new std::vector<FBX_NODE>();
     
     while(!(filemark > rootNode->endOffset)) {
-        FBX_NODE* newNode = (FBX_NODE*)malloc(sizeof(FBX_NODE));
-        readNode(newNode, buffer, filemark);
+        FBX_NODE newNode;
+        newNode.parentNode = rootNode;
+        nestedNodes->push_back(newNode);
+        readNode(&newNode, buffer, filemark);
     }
+    
+    rootNode->nestedNodes = nestedNodes->data();
+    rootNode->numSubNodes = nestedNodes->size();
 
     std::cout << "filemark: " << filemark << std::endl
         << "endOffset: " << rootNode->endOffset << std::endl 
@@ -337,6 +372,69 @@ void FileHandler::readNode(FBX_NODE* rootNode, std::vector<char> *buffer, unsign
 
     return;
  
+}
+
+void FileHandler::freeNodes(FBX_NODE* node) {
+    if (node == NULL) {
+        printf("null node\n");
+        fflush(stdout);
+        return;
+    }
+    printf("starting free\n");
+    fflush(stdout);
+    if (node->numSubNodes < 1) {
+        // free the properties
+        printf("starting property free\n");
+        fflush(stdout);
+        for (unsigned int i = 0; i < node->numProperties; i++){
+            // free the property data
+            switch(node->properties[i].typeCode){
+                case 'Y': // primitive types (require no extra freeing of memory)
+                case 'C':
+                case 'I':
+                case 'F':
+                case 'D':
+                case 'L': {
+                    break;
+                }
+                // Array types have to have their array freed
+                case 'f':
+                case 'd':
+                case 'l':
+                case 'i':
+                case 'b': {
+                    // free the array before freeing the data
+                    printf("freeing array data\n");
+                    fflush(stdout);
+                    FBX_ARRAY_TYPE *arrayPointer = (FBX_ARRAY_TYPE*)node->properties[i].data;
+                    free(arrayPointer->data);
+                    break;
+                }
+                // special types will have to have their data pointer freed
+                case 'S':
+                case 'R': {
+                    printf("freeing special data\n");
+                    fflush(stdout);
+                    FBX_SPECIAL_TYPE *specialPointer = (FBX_SPECIAL_TYPE*)node->properties[i].data;
+                    free(specialPointer->data);
+                    break;
+                }
+            }
+            printf("freeing special data\n");
+            fflush(stdout);
+            free(node->properties[i].data);
+        }
+        printf("freeing special data\n");
+        fflush(stdout);
+        free(node);
+        return;
+    } else {
+        for (unsigned int i = 0; i < node->numSubNodes; i++) {
+            printf("freeing nested Nodes\n");
+            fflush(stdout);
+            freeNodes(&(node->nestedNodes[i]));
+        }
+    }
 }
 
 unsigned char* FileHandler::loadImage(const char* filepath, int& width, int& height, int& numChannels) {

@@ -33,7 +33,9 @@ public:
         unsigned char nameLen;
         char* name;
         FBX_PROPERTY* properties;
+        unsigned int numSubNodes;
         FBX_NODE* nestedNodes;
+        FBX_NODE* parentNode;
     };
 
     static std::string shaderPath;
@@ -45,7 +47,8 @@ public:
     static void loadModelFBX(const char* filepath, std::vector<float> *vertices, std::vector<float> *textures, std::vector<float> *normals);
 
 private:
-    static void readNode(FBX_NODE* rootNode, std::vector<char> *buffer, unsigned long &filemark);
+    static void readNode(FBX_NODE *rootNode, std::vector<char> *buffer, unsigned long &filemark);
+    static void freeNodes(FBX_NODE *node);
 
 
 };
