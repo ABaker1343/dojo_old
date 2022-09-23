@@ -351,24 +351,28 @@ void FileHandler::readNode(FBX_NODE* rootNode, std::vector<char> *buffer, unsign
     }
 
     // check for nested lists
-    std::vector<FBX_NODE> *nestedNodes = new std::vector<FBX_NODE>();
+
+    rootNode->numSubNodes = 0;
+    FBX_NODE *newNodeList = (FBX_NODE*)malloc(sizeof(FBX_NODE) * 10);
     
     while(!(filemark > rootNode->endOffset)) {
-        FBX_NODE newNode;
-        newNode.parentNode = rootNode;
-        nestedNodes->push_back(newNode);
-        readNode(&newNode, buffer, filemark);
+        FBX_NODE *newNode = newNodeList + rootNode->numSubNodes;
+        newNode->parentNode = rootNode;
+        readNode(newNode, buffer, filemark);
+        rootNode->numSubNodes++;
     }
-    
-    rootNode->nestedNodes = nestedNodes->data();
-    rootNode->numSubNodes = nestedNodes->size();
 
+    rootNode->nestedNodes = (FBX_NODE*)malloc(sizeof(FBX_NODE) * rootNode->numSubNodes);
+    memcpy(rootNode->nestedNodes, newNodeList, sizeof(FBX_NODE) * rootNode->numSubNodes);
+    free(newNodeList);
+    
     std::cout << "filemark: " << filemark << std::endl
         << "endOffset: " << rootNode->endOffset << std::endl 
         << "numProperties: " << rootNode->numProperties << std::endl
         << "propertyListLen: " << rootNode->propertyListLen << std::endl
         << "nameLen: " << (unsigned int)rootNode->nameLen << std::endl
-        << "name: " << rootNode->name << std::endl;
+        << "name: " << rootNode->name << std::endl
+        << "number of nested nodes: " << rootNode->numSubNodes << std::endl;
 
     return;
  
@@ -420,11 +424,11 @@ void FileHandler::freeNodes(FBX_NODE* node) {
                     break;
                 }
             }
-            printf("freeing special data\n");
+            printf("freeing property\n");
             fflush(stdout);
             free(node->properties[i].data);
         }
-        printf("freeing special data\n");
+        printf("freeing node\n");
         fflush(stdout);
         free(node);
         return;
@@ -434,6 +438,8 @@ void FileHandler::freeNodes(FBX_NODE* node) {
             fflush(stdout);
             freeNodes(&(node->nestedNodes[i]));
         }
+        printf("freeing node with already freed subnodes\n");
+        free(node);
     }
 }
 
