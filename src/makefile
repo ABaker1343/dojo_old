@@ -21,6 +21,9 @@ clean:
 	rm menuItems/*.o
 	rm *.o
 
+debug: $(OBJ)
+	$(CC) -g -shared -o ../libdojo.so $(OBJ) $(CFLAGS)
+
 show:
 	echo "$(CFLAGS)"
 	echo "$(OBJ)"
