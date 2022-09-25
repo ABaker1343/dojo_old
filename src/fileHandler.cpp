@@ -189,12 +189,16 @@ void FileHandler::loadModelFBX(const char* filepath, std::vector<float> *vertice
     
     while (nodesToVisit->size() > 0) {
         currentNode = (*nodesToVisit)[0];
+        nodesToVisit->pop_front();
         for (unsigned int i = 0; i < currentNode->numSubNodes; i++){
             nodesToVisit->push_front(&(currentNode->nestedNodes[i]));
         }
-        std::cout << "name: " << currentNode->name << std::endl
-            << "properties: " << currentNode->properties << std::endl;
-        nodesToVisit->pop_front();
+        if (strcmp(currentNode->name, "Vertices") == 0) {
+            std::cout << currentNode->name << std::endl;
+            std::cout << "num properties: " << currentNode->numProperties << std::endl;
+            std::cout << "property list length: " << currentNode->numProperties << std::endl;
+            }
+        }
     }
 
     freeNodes(rootNode);

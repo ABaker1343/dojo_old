@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-lGL -ldojo -L. -I. $(shell pkg-config --cflags freetype2) -Wall -Wl,-rpath='$$ORIGIN' $(shell pkg-config --libs freetype2)
+CFLAGS=-g -lGL -ldojo -L. -I. $(shell pkg-config --cflags freetype2) -Wall -Wl,-rpath='$$ORIGIN' $(shell pkg-config --libs freetype2)
 
 SOURCE=$(wildcard *.cpp)
 OBJECT=$(patsubst .cpp, .o, $(SOURCE))
